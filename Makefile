@@ -8,7 +8,7 @@ OUTDIR=bin/
 CC=g++
 
 # all: bliss fsm count test existence-query convert_data
-all: bliss count
+all: bliss testGraph
 
 core/roaring.o: core/roaring/roaring.c
 	gcc -c core/roaring/roaring.c -o $@ -O3 -Wall -Wextra -Wpedantic -fPIC 
@@ -24,6 +24,9 @@ existence-query: apps/existence-query.cc $(OBJ) bliss
 
 count: apps/count.cc $(OBJ) bliss
 	$(CC) apps/count.cc $(OBJ) -o $(OUTDIR)/$@ $(BLISS_LDFLAGS) $(LDFLAGS) $(CFLAGS)
+
+testGraph: apps/testGraphhh.cc $(OBJ) bliss
+	$(CC) apps/testGraphhh.cc $(OBJ) -o $(OUTDIR)/$@ $(BLISS_LDFLAGS) $(LDFLAGS) $(CFLAGS)
 
 test: core/test.cc $(OBJ) core/DataConverter.o core/roaring.o bliss
 	$(CC) core/test.cc -DTESTING $(OBJ) core/DataConverter.o core/roaring.o -o $(OUTDIR)/$@ $(BLISS_LDFLAGS) $(LDFLAGS) -lUnitTest++ $(CFLAGS)
