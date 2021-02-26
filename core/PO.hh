@@ -9,6 +9,8 @@
 namespace PO {
   std::vector<std::pair<uint32_t, uint32_t>> findPOs(const bliss::Graph &H);
   std::vector<std::vector<uint32_t>> automorphicSets(const bliss::Graph &H);
+  std::vector<std::pair<uint32_t, uint32_t>> findPOs(const bliss::Digraph &H);
+  std::vector<std::vector<uint32_t>> automorphicSets(const bliss::Digraph &H);
 }
 
 #endif
