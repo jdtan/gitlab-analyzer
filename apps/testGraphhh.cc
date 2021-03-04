@@ -16,10 +16,10 @@ bool is_directory(const std::string &path)
 int main(int argc, char *argv[])
 {
   const std::string pattern_name(argv[1]);
-
   Peregrine::SmallGraph tempGraph = Peregrine::SmallGraph (pattern_name);
-
-  tempGraph.to_string(0);
+  tempGraph.to_string_debug();
+  
+  Peregrine::AnalyzedPattern analyzedPattern = Peregrine::AnalyzedPattern(tempGraph);
 
   return 0;
 }

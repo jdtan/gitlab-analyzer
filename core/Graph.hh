@@ -37,7 +37,6 @@ namespace Peregrine
     class SmallGraph
     {
     private:
-        //TODO: docTest (Testing library)
         friend class AnalyzedPattern;
         friend struct ::Peregrine::PatternGenerator;
         friend class ::Peregrine::DataGraph;
@@ -102,30 +101,10 @@ namespace Peregrine
             return count;
         }
 
-        uint32_t num_true_edges_out() const
-        {
-            uint32_t count = 0;
-            for (const auto &[u, edges] : true_adj_list_out) {
-                count += edges.size();
-            }
-
-            return count;
-        }
-
         uint32_t num_anti_edges_in() const
         {
             uint32_t count = 0;
             for (const auto &[u, edges] : anti_adj_list_in) {
-                count += edges.size();
-            }
-
-            return count;
-        }
-
-        uint32_t num_anti_edges_out() const
-        {
-            uint32_t count = 0;
-            for (const auto &[u, edges] : anti_adj_list_out) {
                 count += edges.size();
             }
 
@@ -200,8 +179,7 @@ namespace Peregrine
             {
                 for (uint32_t neighbour : neighbours)
                 {
-                    if (vertex < neighbour)
-                        blissDigraph.add_edge(neighbour - 1, vertex - 1);
+                    blissDigraph.add_edge(neighbour - 1, vertex - 1);
                 }
             }
 
@@ -331,7 +309,7 @@ namespace Peregrine
             }
         }
 
-        void to_string(int code) const {
+        void to_string_debug() const {
             std::cout << "num_vertices: " << num_vertices() << std::endl;
             std::cout << "vertices: ";
             for (auto v : v_list()) {
@@ -346,7 +324,7 @@ namespace Peregrine
                 }
                 std::cout << std::endl;
             }
-            std::cout << "true_adj_out_size: " << num_true_edges_out() << std::endl;
+            std::cout << "true_adj_out_list: " << std::endl;
             for (auto v : true_adj_list_out) {
                 std::cout << v.first << ": ";
                 for (auto neighbour : v.second) {
@@ -362,7 +340,7 @@ namespace Peregrine
                 }
                 std::cout << std::endl;
             }
-            std::cout << "anti_adj_out_size: " << num_anti_edges_out() << std::endl;
+            std::cout << "anti_adj_out_list: " << std::endl;
             for (auto v : anti_adj_list_out) {
                 std::cout << v.first << ": ";
                 for (auto neighbour : v.second) {
@@ -675,7 +653,7 @@ namespace Peregrine
             std::cout << "\n-----------------condition----------------------\n";
             for (auto pairs : myConditions)
                 std::cout << pairs.first << ", " << pairs.second << std::endl;
-            std::cout << "\n------------------------------------------------\n";
+            std::cout << "------------------------------------------------\n";
         }
 
         AnalyzedPattern(const AnalyzedPattern &other)
@@ -687,7 +665,7 @@ namespace Peregrine
             check_labels();
             conditions = get_conditions();
             print_conditions(conditions);
-//            build_rbi_graph();
+            build_rbi_graph();
         }
 
         AnalyzedPattern(const SmallGraph &p)
@@ -699,7 +677,7 @@ namespace Peregrine
             check_labels();
             conditions = get_conditions();
             print_conditions(conditions);
-//            build_rbi_graph();
+            // build_rbi_graph();
         }
 
         AnalyzedPattern(std::string inputfile)
@@ -711,7 +689,7 @@ namespace Peregrine
             check_labels();
             conditions = get_conditions();
             print_conditions(conditions);
-//            build_rbi_graph();
+            build_rbi_graph();
         }
 
         Graph::Labelling labelling_type() const
@@ -734,7 +712,7 @@ namespace Peregrine
         {
             if (anti_vertices.empty())
             {
-                if ((query_graph.num_anti_edges_in() + query_graph.num_anti_edges_out()) == 0)
+                if (query_graph.num_anti_edges_in() == 0)
                     return false;
             }
             else
@@ -743,17 +721,16 @@ namespace Peregrine
                 for (uint32_t antiVertex : anti_vertices)
                 {
                     numAntiEdges += query_graph.anti_adj_list_in.at(antiVertex).size();
-                    numAntiEdges += query_graph.anti_adj_list_out.at(antiVertex).size();
                 }
 
                 // all anti-edges come from anti-vertices
-                if (numAntiEdges == (query_graph.num_anti_edges_in() + query_graph.num_true_edges_out()))
+                if (numAntiEdges == query_graph.num_anti_edges_in())
                     return false;
             }
 
             // false iff vertex-induced
-            uint32_t m = query_graph.num_anti_edges_in() + query_graph.num_anti_edges_out()
-                    + query_graph.num_true_edges_in() + query_graph.num_true_edges_out();
+            // TODO: Double check here
+            uint32_t m = query_graph.num_anti_edges_in() + query_graph.num_true_edges_in();
             uint32_t n = query_graph.num_vertices();
 
             return m != (n*(n-1));
@@ -761,7 +738,7 @@ namespace Peregrine
 
         void check_connected() const
         {
-            if (!is_connected(query_graph.v_list(), query_graph.true_adj_list_in, query_graph.true_adj_list_out))
+            if (!is_connected(query_graph.v_list(), query_graph.true_adj_list_out))
             {
                 throw std::runtime_error(query_graph.to_string() + " is not connected and cannot be matched.");
             }
@@ -839,7 +816,7 @@ namespace Peregrine
             assert(query_graph.num_vertices() != 0);
             uint32_t n = query_graph.num_vertices();
             return n > 2 && anti_vertices.empty()
-            && (query_graph.num_true_edges_in() + query_graph.num_true_edges_out()) == n*(n-1);
+            && query_graph.num_true_edges_in() == n*(n-1);
         }
 
         uint32_t match_po(const std::vector<uint32_t> &v_list, const std::vector<std::pair<uint32_t, uint32_t>> &po)
@@ -856,17 +833,16 @@ namespace Peregrine
         }
 
         bool is_connected(const std::set<uint32_t> &vertex_set,
-                          const std::unordered_map<uint32_t, std::vector<uint32_t>> &adj_list_in,
                           const std::unordered_map<uint32_t, std::vector<uint32_t>> &adj_list_out) const
         {
             std::vector<uint32_t> vertex_cover(vertex_set.cbegin(), vertex_set.cend());
-            return is_connected(vertex_cover, adj_list_in, adj_list_out);
+            return is_connected(vertex_cover, adj_list_out);
         }
 
         // + since weakly connected is enough for directed graph
         // + we could simply convert two adj lists into one and then perform check
+        // + In addition, we only need to iterate one adj_list_in/adj_list_out to generate the adj_list
         bool is_connected(const std::vector<uint32_t> &vertex_cover,
-                          const std::unordered_map<uint32_t, std::vector<uint32_t>> &adj_list_in,
                           const std::unordered_map<uint32_t, std::vector<uint32_t>> &adj_list_out) const
         {
             std::unordered_map<uint32_t, std::vector<uint32_t>> adj_list;
@@ -1017,7 +993,7 @@ namespace Peregrine
                 }
             }
 
-            if (!is_connected(vertex_cover, v_cover_graph.true_adj_list_in, v_cover_graph.true_adj_list_out))
+            if (!is_connected(vertex_cover, v_cover_graph.true_adj_list_out))
             {
                 *status = -1;
             }
@@ -1222,9 +1198,19 @@ namespace Peregrine
             return nautsets;
         }
 
+        //TODO: Delete after debug
+        void print_vector(std::vector<uint32_t> myVector) {
+            for (auto ele : myVector) {
+                std::cout << ele << ", ";
+            }
+
+            std::cout << "\n";
+        }
+
         std::vector<std::pair<uint32_t, uint32_t>> get_conditions()
         {
             std::vector<std::pair<uint32_t, uint32_t>> result;
+
             // XXX: and no anti-edges or vertices, and no labels
             if (is_clique() && labelling_type() == Graph::UNLABELLED)
             {
@@ -1242,12 +1228,6 @@ namespace Peregrine
                 uint32_t max_v = query_graph.num_vertices();
 
                 std::vector<uint32_t> mapping(max_v);
-                // construct bliss graph with vertices sorted by degree
-//                std::vector<uint32_t> degs(max_v);
-                // regular vertex anti-edges should not
-
-//                std::vector<std::vector<uint32_t>> nbr_degs(max_v);
-
                 std::vector<uint32_t> degs_in(max_v);
                 std::vector<uint32_t> degs_out(max_v);
                 std::vector<std::vector<uint32_t>> nbr_degs_in(max_v);
@@ -1282,25 +1262,30 @@ namespace Peregrine
                     sorted_v[i] = i;
                 }
 
-                // TODO; just use the sum of in and out degrees.
                 if (labelling_type() != Graph::UNLABELLED && labelling_type() != Graph::DISCOVER_LABELS)
                 {
                     std::sort(sorted_v.begin(), sorted_v.end(),
-                              [&degs, &nbr_degs, this](uint32_t a, uint32_t b)
+                              [&degs_in, &degs_out , &nbr_degs_in, &nbr_degs_out, this](uint32_t a, uint32_t b)
                               {
-                                  return degs[a] > degs[b]
-                                         || (degs[a] == degs[b] && nbr_degs[a] > nbr_degs[b])
-                                         || (degs[a] == degs[b] && nbr_degs[a] == nbr_degs[b]
-                                                && query_graph.labels[a] < query_graph.labels[b]);
+                                  uint32_t degs_a = degs_in[a] + degs_out[a];
+                                  uint32_t degs_b = degs_in[b] + degs_out[b];
+
+                                  return degs_a > degs_b
+                                         || (degs_a == degs_b && nbr_degs_in[a] > nbr_degs_in[b] && nbr_degs_out[a] > nbr_degs_out[b])
+                                         || (degs_a == degs_b && nbr_degs_in[a] == nbr_degs_in[b] && nbr_degs_out[a] == nbr_degs_out[b]
+                                             && query_graph.labels[a] < query_graph.labels[b]);
                               });
                 }
                 else
                 {
                     std::sort(sorted_v.begin(), sorted_v.end(),
-                              [&degs, &nbr_degs, this](uint32_t a, uint32_t b)
+                              [&degs_in, &degs_out , &nbr_degs_in, &nbr_degs_out, this](uint32_t a, uint32_t b)
                               {
-                                  return degs[a] > degs[b]
-                                         || (degs[a] == degs[b] && nbr_degs[a] > nbr_degs[b]);
+                                  uint32_t degs_a = degs_in[a] + degs_out[a];
+                                  uint32_t degs_b = degs_in[b] + degs_out[b];
+
+                                  return degs_a > degs_b
+                                         || (degs_a == degs_b && nbr_degs_in[a] > nbr_degs_in[b] && nbr_degs_out[a] > nbr_degs_out[b]);
                                   //|| (degs[a] == degs[b] && nbr_degs[a] == nbr_degs[b] && a > b);
                               });
                 }
@@ -1329,10 +1314,7 @@ namespace Peregrine
                 {
                     for (uint32_t v : nbrs)
                     {
-                        if (u < v)
-                        {
-                            bliss_di_qg.add_edge(mapping[u - 1], mapping[v - 1]);
-                        }
+                        bliss_di_qg.add_edge(mapping[u - 1], mapping[v - 1]);
                     }
                 }
 
@@ -1425,8 +1407,7 @@ namespace Peregrine
                             }
                             else if (current_po_match_count == po_match_count)
                             {
-                                if (vertex_cover.num_true_edges_in() + vertex_cover.num_true_edges_out()
-                                    >= rbi_v.num_true_edges_in() + rbi_v.num_true_edges_out())
+                                if (vertex_cover.num_true_edges_in() >= rbi_v.num_true_edges_in())
                                 {
                                     rbi_v = vertex_cover;
                                     v_count = vertex_cover.num_vertices();
@@ -1902,12 +1883,25 @@ namespace Peregrine
         {
             qo_book[vgs_id].push_back(source);
             visited[source] = true;
-            // TODO: just check if its in in list or out list
-            for (auto neighbour : vgs.true_adj_list.at(source))
+            bool found = false;
+
+            // TODO: Need to check logic, I could combine them into one for loop
+            for (auto neighbour : vgs.true_adj_list_in.at(source))
             {
                 if (!visited[neighbour])
                 {
                     get_qo(vgs,neighbour,vgs_id,visited);
+                    found = true;
+                }
+            }
+
+            if (!found) {
+                for (auto neighbour : vgs.true_adj_list_out.at(source))
+                {
+                    if (!visited[neighbour])
+                    {
+                        get_qo(vgs,neighbour,vgs_id,visited);
+                    }
                 }
             }
         }
@@ -1917,7 +1911,6 @@ namespace Peregrine
             qo_book.resize(vgs.size());
             auto vgs_id = 0;
 
-            //TODO: just check whether its in in list or out list
             for(const SmallGraph &vgs : this->vgs)
             {
                 std::vector<bool> visited(vgs.num_vertices()+1, false);

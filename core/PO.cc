@@ -154,6 +154,25 @@ namespace PO
     return eclasses;
   }
 
+  auto getAEquivalenceClasses(const std::vector<std::vector<uint32_t>> &A, const bliss::Digraph &H)
+    {
+        std::map<uint32_t, std::set<uint32_t>> eclasses;
+
+        for (unsigned int id = 0; id < H.get_nof_vertices(); ++id)
+        {
+            std::set<uint32_t> eclass;
+            for (auto &&perm : A)
+            {
+                eclass.insert(perm[id]);
+            }
+
+            uint32_t rep = *std::min_element(eclass.cbegin(), eclass.cend());
+            eclasses[rep].insert(eclass.cbegin(), eclass.cend());
+        }
+
+        return eclasses;
+    }
+
   std::vector<std::pair<uint32_t, uint32_t>> findPOs(const bliss::Graph &H)
   {
     // compute Aut_H and H_E
