@@ -68,10 +68,10 @@ RM = /cygdrive/c/Users/Henry/AppData/Local/JetBrains/CLion2020.3/cygwin_cmake/bi
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion
+CMAKE_SOURCE_DIR = /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/cmake-build-debug
+CMAKE_BINARY_DIR = /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -100,9 +100,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/cmake-build-debug/CMakeFiles /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/cmake-build-debug/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/cmake-build-debug/CMakeFiles /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/cmake-build-debug/CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -131,17 +131,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named peregrine_directed_clion
+# Target rules for targets named peregrine-directed
 
 # Build rule for target.
-peregrine_directed_clion: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 peregrine_directed_clion
-.PHONY : peregrine_directed_clion
+peregrine-directed: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 peregrine-directed
+.PHONY : peregrine-directed
 
 # fast build rule for target.
-peregrine_directed_clion/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine_directed_clion.dir/build.make CMakeFiles/peregrine_directed_clion.dir/build
-.PHONY : peregrine_directed_clion/fast
+peregrine-directed/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine-directed.dir/build.make CMakeFiles/peregrine-directed.dir/build
+.PHONY : peregrine-directed/fast
 
 apps/count.o: apps/count.cc.o
 
@@ -149,7 +149,7 @@ apps/count.o: apps/count.cc.o
 
 # target to build an object file
 apps/count.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine_directed_clion.dir/build.make CMakeFiles/peregrine_directed_clion.dir/apps/count.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine-directed.dir/build.make CMakeFiles/peregrine-directed.dir/apps/count.cc.o
 .PHONY : apps/count.cc.o
 
 apps/count.i: apps/count.cc.i
@@ -158,7 +158,7 @@ apps/count.i: apps/count.cc.i
 
 # target to preprocess a source file
 apps/count.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine_directed_clion.dir/build.make CMakeFiles/peregrine_directed_clion.dir/apps/count.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine-directed.dir/build.make CMakeFiles/peregrine-directed.dir/apps/count.cc.i
 .PHONY : apps/count.cc.i
 
 apps/count.s: apps/count.cc.s
@@ -167,7 +167,7 @@ apps/count.s: apps/count.cc.s
 
 # target to generate assembly for a file
 apps/count.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine_directed_clion.dir/build.make CMakeFiles/peregrine_directed_clion.dir/apps/count.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine-directed.dir/build.make CMakeFiles/peregrine-directed.dir/apps/count.cc.s
 .PHONY : apps/count.cc.s
 
 apps/existence-query.o: apps/existence-query.cc.o
@@ -176,7 +176,7 @@ apps/existence-query.o: apps/existence-query.cc.o
 
 # target to build an object file
 apps/existence-query.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine_directed_clion.dir/build.make CMakeFiles/peregrine_directed_clion.dir/apps/existence-query.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine-directed.dir/build.make CMakeFiles/peregrine-directed.dir/apps/existence-query.cc.o
 .PHONY : apps/existence-query.cc.o
 
 apps/existence-query.i: apps/existence-query.cc.i
@@ -185,7 +185,7 @@ apps/existence-query.i: apps/existence-query.cc.i
 
 # target to preprocess a source file
 apps/existence-query.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine_directed_clion.dir/build.make CMakeFiles/peregrine_directed_clion.dir/apps/existence-query.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine-directed.dir/build.make CMakeFiles/peregrine-directed.dir/apps/existence-query.cc.i
 .PHONY : apps/existence-query.cc.i
 
 apps/existence-query.s: apps/existence-query.cc.s
@@ -194,7 +194,7 @@ apps/existence-query.s: apps/existence-query.cc.s
 
 # target to generate assembly for a file
 apps/existence-query.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine_directed_clion.dir/build.make CMakeFiles/peregrine_directed_clion.dir/apps/existence-query.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine-directed.dir/build.make CMakeFiles/peregrine-directed.dir/apps/existence-query.cc.s
 .PHONY : apps/existence-query.cc.s
 
 apps/fsm.o: apps/fsm.cc.o
@@ -203,7 +203,7 @@ apps/fsm.o: apps/fsm.cc.o
 
 # target to build an object file
 apps/fsm.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine_directed_clion.dir/build.make CMakeFiles/peregrine_directed_clion.dir/apps/fsm.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine-directed.dir/build.make CMakeFiles/peregrine-directed.dir/apps/fsm.cc.o
 .PHONY : apps/fsm.cc.o
 
 apps/fsm.i: apps/fsm.cc.i
@@ -212,7 +212,7 @@ apps/fsm.i: apps/fsm.cc.i
 
 # target to preprocess a source file
 apps/fsm.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine_directed_clion.dir/build.make CMakeFiles/peregrine_directed_clion.dir/apps/fsm.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine-directed.dir/build.make CMakeFiles/peregrine-directed.dir/apps/fsm.cc.i
 .PHONY : apps/fsm.cc.i
 
 apps/fsm.s: apps/fsm.cc.s
@@ -221,7 +221,7 @@ apps/fsm.s: apps/fsm.cc.s
 
 # target to generate assembly for a file
 apps/fsm.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine_directed_clion.dir/build.make CMakeFiles/peregrine_directed_clion.dir/apps/fsm.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine-directed.dir/build.make CMakeFiles/peregrine-directed.dir/apps/fsm.cc.s
 .PHONY : apps/fsm.cc.s
 
 apps/testGraphhh.o: apps/testGraphhh.cc.o
@@ -230,7 +230,7 @@ apps/testGraphhh.o: apps/testGraphhh.cc.o
 
 # target to build an object file
 apps/testGraphhh.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine_directed_clion.dir/build.make CMakeFiles/peregrine_directed_clion.dir/apps/testGraphhh.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine-directed.dir/build.make CMakeFiles/peregrine-directed.dir/apps/testGraphhh.cc.o
 .PHONY : apps/testGraphhh.cc.o
 
 apps/testGraphhh.i: apps/testGraphhh.cc.i
@@ -239,7 +239,7 @@ apps/testGraphhh.i: apps/testGraphhh.cc.i
 
 # target to preprocess a source file
 apps/testGraphhh.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine_directed_clion.dir/build.make CMakeFiles/peregrine_directed_clion.dir/apps/testGraphhh.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine-directed.dir/build.make CMakeFiles/peregrine-directed.dir/apps/testGraphhh.cc.i
 .PHONY : apps/testGraphhh.cc.i
 
 apps/testGraphhh.s: apps/testGraphhh.cc.s
@@ -248,7 +248,7 @@ apps/testGraphhh.s: apps/testGraphhh.cc.s
 
 # target to generate assembly for a file
 apps/testGraphhh.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine_directed_clion.dir/build.make CMakeFiles/peregrine_directed_clion.dir/apps/testGraphhh.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine-directed.dir/build.make CMakeFiles/peregrine-directed.dir/apps/testGraphhh.cc.s
 .PHONY : apps/testGraphhh.cc.s
 
 # Help Target
@@ -259,7 +259,7 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... peregrine_directed_clion"
+	@echo "... peregrine-directed"
 	@echo "... apps/count.o"
 	@echo "... apps/count.i"
 	@echo "... apps/count.s"

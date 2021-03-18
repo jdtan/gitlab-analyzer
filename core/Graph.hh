@@ -607,6 +607,7 @@ namespace Peregrine
     class AnalyzedPattern
     {
     public:
+    // query oder, vgs, 
         SmallGraph query_graph;
         std::vector<SmallGraph> vgs;
 
@@ -622,6 +623,7 @@ namespace Peregrine
 
         // vmap[i][j][k] is the query_graph vertex corresponding to
         // the jth vertex in the kth query sequence of the ith vgs
+        //TODO: remove global order
         std::vector<std::vector<std::vector<uint32_t>>> vmap;
         std::vector<uint32_t> global_order;
         std::vector<std::vector<uint32_t>> qo_book;
@@ -1164,8 +1166,13 @@ namespace Peregrine
 
                 for (size_t j = 0; j < vs2.true_adj_list_out[v].size(); j++)
                 {
-                    if (vs2.true_adj_list_out[v][j] != vs1.true_adj_list_out[v][j]
-                        || vs2.true_adj_list_in[v][j] != vs1.true_adj_list_in[v][j])
+                    if (vs2.true_adj_list_out[v][j] != vs1.true_adj_list_out[v][j])
+                        return false;
+                }
+
+                for (size_t j = 0; j < vs2.true_adj_list_in[v].size(); j++)
+                {
+                    if (vs2.true_adj_list_in[v][j] != vs1.true_adj_list_in[v][j])
                         return false;
                 }
 
@@ -1176,8 +1183,13 @@ namespace Peregrine
 
                 for (size_t j = 0; j < vs2.anti_adj_list_in[v].size(); j++)
                 {
-                    if (vs2.anti_adj_list_out[v][j] != vs1.anti_adj_list_out[v][j]
-                        || vs2.anti_adj_list_in[v][j] != vs1.anti_adj_list_in[v][j])
+                    if (vs2.anti_adj_list_in[v][j] != vs1.anti_adj_list_in[v][j])
+                        return false;
+                }
+
+                for (size_t j = 0; j < vs2.anti_adj_list_out[v].size(); j++)
+                {
+                    if (vs2.anti_adj_list_out[v][j] != vs1.anti_adj_list_out[v][j])
                         return false;
                 }
             }

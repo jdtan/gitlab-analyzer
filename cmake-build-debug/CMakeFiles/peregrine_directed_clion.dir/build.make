@@ -63,10 +63,10 @@ RM = /cygdrive/c/Users/Henry/AppData/Local/JetBrains/CLion2020.3/cygwin_cmake/bi
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion
+CMAKE_SOURCE_DIR = /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/cmake-build-debug
+CMAKE_BINARY_DIR = /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/cmake-build-debug
 
 # Include any dependencies generated for this target.
 include CMakeFiles/peregrine_directed_clion.dir/depend.make
@@ -79,55 +79,55 @@ include CMakeFiles/peregrine_directed_clion.dir/flags.make
 
 CMakeFiles/peregrine_directed_clion.dir/apps/testGraphhh.cc.o: CMakeFiles/peregrine_directed_clion.dir/flags.make
 CMakeFiles/peregrine_directed_clion.dir/apps/testGraphhh.cc.o: ../apps/testGraphhh.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/peregrine_directed_clion.dir/apps/testGraphhh.cc.o"
-	/usr/bin/c++.exe  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/peregrine_directed_clion.dir/apps/testGraphhh.cc.o -c /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/apps/testGraphhh.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/peregrine_directed_clion.dir/apps/testGraphhh.cc.o"
+	/usr/bin/c++.exe  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/peregrine_directed_clion.dir/apps/testGraphhh.cc.o -c /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/apps/testGraphhh.cc
 
 CMakeFiles/peregrine_directed_clion.dir/apps/testGraphhh.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/peregrine_directed_clion.dir/apps/testGraphhh.cc.i"
-	/usr/bin/c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/apps/testGraphhh.cc > CMakeFiles/peregrine_directed_clion.dir/apps/testGraphhh.cc.i
+	/usr/bin/c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/apps/testGraphhh.cc > CMakeFiles/peregrine_directed_clion.dir/apps/testGraphhh.cc.i
 
 CMakeFiles/peregrine_directed_clion.dir/apps/testGraphhh.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/peregrine_directed_clion.dir/apps/testGraphhh.cc.s"
-	/usr/bin/c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/apps/testGraphhh.cc -o CMakeFiles/peregrine_directed_clion.dir/apps/testGraphhh.cc.s
+	/usr/bin/c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/apps/testGraphhh.cc -o CMakeFiles/peregrine_directed_clion.dir/apps/testGraphhh.cc.s
 
 CMakeFiles/peregrine_directed_clion.dir/apps/count.cc.o: CMakeFiles/peregrine_directed_clion.dir/flags.make
 CMakeFiles/peregrine_directed_clion.dir/apps/count.cc.o: ../apps/count.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/peregrine_directed_clion.dir/apps/count.cc.o"
-	/usr/bin/c++.exe  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/peregrine_directed_clion.dir/apps/count.cc.o -c /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/apps/count.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/peregrine_directed_clion.dir/apps/count.cc.o"
+	/usr/bin/c++.exe  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/peregrine_directed_clion.dir/apps/count.cc.o -c /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/apps/count.cc
 
 CMakeFiles/peregrine_directed_clion.dir/apps/count.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/peregrine_directed_clion.dir/apps/count.cc.i"
-	/usr/bin/c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/apps/count.cc > CMakeFiles/peregrine_directed_clion.dir/apps/count.cc.i
+	/usr/bin/c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/apps/count.cc > CMakeFiles/peregrine_directed_clion.dir/apps/count.cc.i
 
 CMakeFiles/peregrine_directed_clion.dir/apps/count.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/peregrine_directed_clion.dir/apps/count.cc.s"
-	/usr/bin/c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/apps/count.cc -o CMakeFiles/peregrine_directed_clion.dir/apps/count.cc.s
+	/usr/bin/c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/apps/count.cc -o CMakeFiles/peregrine_directed_clion.dir/apps/count.cc.s
 
 CMakeFiles/peregrine_directed_clion.dir/apps/existence-query.cc.o: CMakeFiles/peregrine_directed_clion.dir/flags.make
 CMakeFiles/peregrine_directed_clion.dir/apps/existence-query.cc.o: ../apps/existence-query.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/peregrine_directed_clion.dir/apps/existence-query.cc.o"
-	/usr/bin/c++.exe  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/peregrine_directed_clion.dir/apps/existence-query.cc.o -c /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/apps/existence-query.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/peregrine_directed_clion.dir/apps/existence-query.cc.o"
+	/usr/bin/c++.exe  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/peregrine_directed_clion.dir/apps/existence-query.cc.o -c /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/apps/existence-query.cc
 
 CMakeFiles/peregrine_directed_clion.dir/apps/existence-query.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/peregrine_directed_clion.dir/apps/existence-query.cc.i"
-	/usr/bin/c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/apps/existence-query.cc > CMakeFiles/peregrine_directed_clion.dir/apps/existence-query.cc.i
+	/usr/bin/c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/apps/existence-query.cc > CMakeFiles/peregrine_directed_clion.dir/apps/existence-query.cc.i
 
 CMakeFiles/peregrine_directed_clion.dir/apps/existence-query.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/peregrine_directed_clion.dir/apps/existence-query.cc.s"
-	/usr/bin/c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/apps/existence-query.cc -o CMakeFiles/peregrine_directed_clion.dir/apps/existence-query.cc.s
+	/usr/bin/c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/apps/existence-query.cc -o CMakeFiles/peregrine_directed_clion.dir/apps/existence-query.cc.s
 
 CMakeFiles/peregrine_directed_clion.dir/apps/fsm.cc.o: CMakeFiles/peregrine_directed_clion.dir/flags.make
 CMakeFiles/peregrine_directed_clion.dir/apps/fsm.cc.o: ../apps/fsm.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/peregrine_directed_clion.dir/apps/fsm.cc.o"
-	/usr/bin/c++.exe  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/peregrine_directed_clion.dir/apps/fsm.cc.o -c /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/apps/fsm.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/peregrine_directed_clion.dir/apps/fsm.cc.o"
+	/usr/bin/c++.exe  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/peregrine_directed_clion.dir/apps/fsm.cc.o -c /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/apps/fsm.cc
 
 CMakeFiles/peregrine_directed_clion.dir/apps/fsm.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/peregrine_directed_clion.dir/apps/fsm.cc.i"
-	/usr/bin/c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/apps/fsm.cc > CMakeFiles/peregrine_directed_clion.dir/apps/fsm.cc.i
+	/usr/bin/c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/apps/fsm.cc > CMakeFiles/peregrine_directed_clion.dir/apps/fsm.cc.i
 
 CMakeFiles/peregrine_directed_clion.dir/apps/fsm.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/peregrine_directed_clion.dir/apps/fsm.cc.s"
-	/usr/bin/c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/apps/fsm.cc -o CMakeFiles/peregrine_directed_clion.dir/apps/fsm.cc.s
+	/usr/bin/c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/apps/fsm.cc -o CMakeFiles/peregrine_directed_clion.dir/apps/fsm.cc.s
 
 # Object files for target peregrine_directed_clion
 peregrine_directed_clion_OBJECTS = \
@@ -145,7 +145,7 @@ peregrine_directed_clion.exe: CMakeFiles/peregrine_directed_clion.dir/apps/exist
 peregrine_directed_clion.exe: CMakeFiles/peregrine_directed_clion.dir/apps/fsm.cc.o
 peregrine_directed_clion.exe: CMakeFiles/peregrine_directed_clion.dir/build.make
 peregrine_directed_clion.exe: CMakeFiles/peregrine_directed_clion.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable peregrine_directed_clion.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable peregrine_directed_clion.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/peregrine_directed_clion.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -158,6 +158,6 @@ CMakeFiles/peregrine_directed_clion.dir/clean:
 .PHONY : CMakeFiles/peregrine_directed_clion.dir/clean
 
 CMakeFiles/peregrine_directed_clion.dir/depend:
-	cd /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/cmake-build-debug /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/cmake-build-debug /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/cmake-build-debug/CMakeFiles/peregrine_directed_clion.dir/DependInfo.cmake --color=$(COLOR)
+	cd /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/cmake-build-debug /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/cmake-build-debug /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/cmake-build-debug/CMakeFiles/peregrine_directed_clion.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/peregrine_directed_clion.dir/depend
 

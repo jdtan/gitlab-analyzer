@@ -64,16 +64,16 @@ RM = /cygdrive/c/Users/Henry/AppData/Local/JetBrains/CLion2020.3/cygwin_cmake/bi
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion
+CMAKE_SOURCE_DIR = /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/cmake-build-debug
+CMAKE_BINARY_DIR = /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/cmake-build-debug
 
 #=============================================================================
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/peregrine_directed_clion.dir/all
+all: CMakeFiles/peregrine-directed.dir/all
 
 .PHONY : all
 
@@ -83,36 +83,36 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/peregrine_directed_clion.dir/clean
+clean: CMakeFiles/peregrine-directed.dir/clean
 
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/peregrine_directed_clion.dir
+# Target rules for target CMakeFiles/peregrine-directed.dir
 
 # All Build rule for target.
-CMakeFiles/peregrine_directed_clion.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine_directed_clion.dir/build.make CMakeFiles/peregrine_directed_clion.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine_directed_clion.dir/build.make CMakeFiles/peregrine_directed_clion.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/cmake-build-debug/CMakeFiles --progress-num=1,2,3,4,5 "Built target peregrine_directed_clion"
-.PHONY : CMakeFiles/peregrine_directed_clion.dir/all
+CMakeFiles/peregrine-directed.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine-directed.dir/build.make CMakeFiles/peregrine-directed.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine-directed.dir/build.make CMakeFiles/peregrine-directed.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/cmake-build-debug/CMakeFiles --progress-num=1,2,3,4,5 "Built target peregrine-directed"
+.PHONY : CMakeFiles/peregrine-directed.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/peregrine_directed_clion.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/cmake-build-debug/CMakeFiles 5
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/peregrine_directed_clion.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/cmake-build-debug/CMakeFiles 0
-.PHONY : CMakeFiles/peregrine_directed_clion.dir/rule
+CMakeFiles/peregrine-directed.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/cmake-build-debug/CMakeFiles 5
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/peregrine-directed.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/cmake-build-debug/CMakeFiles 0
+.PHONY : CMakeFiles/peregrine-directed.dir/rule
 
 # Convenience name for target.
-peregrine_directed_clion: CMakeFiles/peregrine_directed_clion.dir/rule
+peregrine-directed: CMakeFiles/peregrine-directed.dir/rule
 
-.PHONY : peregrine_directed_clion
+.PHONY : peregrine-directed
 
 # clean rule for target.
-CMakeFiles/peregrine_directed_clion.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine_directed_clion.dir/build.make CMakeFiles/peregrine_directed_clion.dir/clean
-.PHONY : CMakeFiles/peregrine_directed_clion.dir/clean
+CMakeFiles/peregrine-directed.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine-directed.dir/build.make CMakeFiles/peregrine-directed.dir/clean
+.PHONY : CMakeFiles/peregrine-directed.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

@@ -15,7 +15,7 @@ bool is_directory(const std::string &path)
 
 int main()
 {
-  std::string fileList[] = {"data/TestCase1.txt", "data/TestCase2.txt", "data/TestCase3.txt", "data/TestCase4.txt"};
+  std::string fileList[] = {/*"data/TestCase1.txt", "data/TestCase2.txt",*/ "data/TestCase3.txt", "data/TestCase4.txt"};
   
   for (auto fileName : fileList) {
     std::cout << "\n\n-----" << "Test " << fileName << "-----\n";

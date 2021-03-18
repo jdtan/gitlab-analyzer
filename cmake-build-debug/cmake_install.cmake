@@ -1,4 +1,4 @@
-# Install script for directory: /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion
+# Install script for directory: /cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

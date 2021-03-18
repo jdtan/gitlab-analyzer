@@ -6,5 +6,5 @@ CXX_FLAGS = -g   -std=gnu++2a
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed-clion/./core 
+CXX_INCLUDES = -I/cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/./core 
 

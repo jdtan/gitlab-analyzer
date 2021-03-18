@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.17)
-project(peregrine_directed_clion)
+project(peregrine-directed)
 
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(
-        peregrine_directed_clion
+        peregrine-directed
         ./apps/testGraphhh.cc
         ./apps/count.cc
         ./apps/existence-query.cc
