@@ -13,13 +13,18 @@ bool is_directory(const std::string &path)
    return S_ISDIR(statbuf.st_mode);
 }
 
-int main(int argc, char *argv[])
+int main()
 {
-  const std::string pattern_name(argv[1]);
-  Peregrine::SmallGraph tempGraph = Peregrine::SmallGraph (pattern_name);
-  tempGraph.to_string_debug();
+  std::string fileList[] = {"data/TestCase1.txt", "data/TestCase2.txt", "data/TestCase3.txt", "data/TestCase4.txt"};
   
-  Peregrine::AnalyzedPattern analyzedPattern = Peregrine::AnalyzedPattern(tempGraph);
+  for (auto fileName : fileList) {
+    std::cout << "\n\n-----" << "Test " << fileName << "-----\n";
+    Peregrine::SmallGraph tempGraph = Peregrine::SmallGraph(fileName);
+    tempGraph.to_string_debug();
+
+    Peregrine::AnalyzedPattern analyzedPattern = Peregrine::AnalyzedPattern(tempGraph);
+    std::cout << "\n\n";
+  }
 
   return 0;
 }

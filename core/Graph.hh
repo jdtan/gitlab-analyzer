@@ -677,7 +677,7 @@ namespace Peregrine
             check_labels();
             conditions = get_conditions();
             print_conditions(conditions);
-            // build_rbi_graph();
+            build_rbi_graph();
         }
 
         AnalyzedPattern(std::string inputfile)
@@ -928,7 +928,9 @@ namespace Peregrine
             for (uint32_t v : vertex_cover)
             {
                 v_cover_graph.true_adj_list_in[v];
+                v_cover_graph.true_adj_list_out[v];
                 v_cover_graph.anti_adj_list_out[v];
+                v_cover_graph.anti_adj_list_in[v];
             }
 
             if (labelling_type() == Graph::LABELLED || labelling_type() == Graph::PARTIALLY_LABELLED)
@@ -1029,16 +1031,19 @@ namespace Peregrine
         {
             std::map<uint32_t, uint32_t> v_map;
             uint32_t new_vid = 0;
+
             for (auto vertex_id : vseq)
             {
                 v_map.insert({vertex_id, new_vid + 1});
                 new_vid++;
             }
+
             SmallGraph n_vseq;
             n_vseq.labels.resize(new_vid);
             for (auto &v : vseq)
             {
                 uint32_t current_vid = v_map.find(v)->second;
+
                 for (size_t j = 0; j < patt.true_adj_list_out.at(v).size(); j++)
                 {
                     uint32_t old_nbr_vid = patt.true_adj_list_out.at(v)[j];
@@ -1093,25 +1098,34 @@ namespace Peregrine
                         n_vseq.anti_adj_list_in[current_vid].push_back(new_nbr_vid);
                     }
                 }
+                
             }
 
             for (auto [u, _] : n_vseq.true_adj_list_out)
             {
                 n_vseq.anti_adj_list_in[u];
+                n_vseq.anti_adj_list_out[u];
+                n_vseq.true_adj_list_in[u];
             }
 
             for (auto [u, _] : n_vseq.true_adj_list_in)
             {
+                n_vseq.anti_adj_list_in[u];
                 n_vseq.anti_adj_list_out[u];
+                n_vseq.true_adj_list_out[u];
             }
 
             for (auto [u, _] : n_vseq.anti_adj_list_out)
             {
                 n_vseq.true_adj_list_out[u];
+                n_vseq.anti_adj_list_in[u];
+                n_vseq.true_adj_list_in[u];
             }
 
             for (auto [u, _] : n_vseq.anti_adj_list_in)
             {
+                n_vseq.true_adj_list_out[u];
+                n_vseq.anti_adj_list_out[u];
                 n_vseq.true_adj_list_in[u];
             }
 
@@ -1196,15 +1210,6 @@ namespace Peregrine
         uint32_t num_aut_sets() const
         {
             return nautsets;
-        }
-
-        //TODO: Delete after debug
-        void print_vector(std::vector<uint32_t> myVector) {
-            for (auto ele : myVector) {
-                std::cout << ele << ", ";
-            }
-
-            std::cout << "\n";
         }
 
         std::vector<std::pair<uint32_t, uint32_t>> get_conditions()
@@ -1879,6 +1884,8 @@ namespace Peregrine
             }
         }
 
+        // TODO: do depth first search
+        // TODO: shuffle ids and test get_conditions()
         void get_qo(const SmallGraph &vgs, uint32_t source, uint32_t vgs_id, std::vector<bool> &visited)
         {
             qo_book[vgs_id].push_back(source);
