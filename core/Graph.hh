@@ -623,7 +623,6 @@ namespace Peregrine
 
         // vmap[i][j][k] is the query_graph vertex corresponding to
         // the jth vertex in the kth query sequence of the ith vgs
-        //TODO: remove global order
         std::vector<std::vector<std::vector<uint32_t>>> vmap;
         std::vector<uint32_t> global_order;
         std::vector<std::vector<uint32_t>> qo_book;
@@ -731,7 +730,6 @@ namespace Peregrine
             }
 
             // false iff vertex-induced
-            // TODO: Double check here
             uint32_t m = query_graph.num_anti_edges_in() + query_graph.num_true_edges_in();
             uint32_t n = query_graph.num_vertices();
 
@@ -943,7 +941,8 @@ namespace Peregrine
             {
                 for (uint32_t v : nbrs)
                 {
-                    if (u > v) continue;
+                    // TODO: Check here
+                    // if (u > v) continue;
                     bool e1 = (vertex_cover.find(u) != vertex_cover.end());
                     bool e2 = (vertex_cover.find(v) != vertex_cover.end());
                     if (e1 && e2)
@@ -969,7 +968,8 @@ namespace Peregrine
             {
                 for (uint32_t v : nbrs)
                 {
-                    if (u > v) continue;
+                    // TODO: Check here
+                    // if (u > v) continue;
 
                     // for safety: explicitly check to disallow anti-vertices
                     // don't need to cover anti-vertex edges: hence we never select an anti-vertex
@@ -1937,7 +1937,6 @@ namespace Peregrine
                 vgs_id++;
             }
         }
-
     };
 
 } // namespace Peregrine
