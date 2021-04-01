@@ -648,15 +648,6 @@ namespace Peregrine
 
         AnalyzedPattern& operator=(const AnalyzedPattern&) = default; // copy assignment
 
-        // + Test only
-        void print_conditions(std::vector<std::pair<uint32_t, uint32_t>> &myConditions) const
-        {
-            std::cout << "\n-----------------condition----------------------\n";
-            for (auto pairs : myConditions)
-                std::cout << pairs.first << ", " << pairs.second << std::endl;
-            std::cout << "------------------------------------------------\n";
-        }
-
         AnalyzedPattern(const AnalyzedPattern &other)
                 : query_graph(other.query_graph)
         {
@@ -665,7 +656,6 @@ namespace Peregrine
             check_anti_vertices();
             check_labels();
             conditions = get_conditions();
-            print_conditions(conditions);
             build_rbi_graph();
         }
 
@@ -677,7 +667,6 @@ namespace Peregrine
             check_anti_vertices();
             check_labels();
             conditions = get_conditions();
-            print_conditions(conditions);
             build_rbi_graph();
         }
 
@@ -689,7 +678,6 @@ namespace Peregrine
             check_anti_vertices();
             check_labels();
             conditions = get_conditions();
-            print_conditions(conditions);
             build_rbi_graph();
         }
 
@@ -811,10 +799,23 @@ namespace Peregrine
             }
         }
 
+        // mcvc: minimum connected vertex cover
         bool is_clique() const
         {
             assert(query_graph.num_vertices() != 0);
             uint32_t n = query_graph.num_vertices();
+            return n > 2 && anti_vertices.empty()
+                   && query_graph.num_true_edges_in() == n*(n-1);
+        }
+
+        // TODO: Resume from here
+        bool is_clique(bool is_mcvc) const
+        {
+            assert(query_graph.num_vertices() != 0);
+            uint32_t n = query_graph.num_vertices();
+            if (is_mcvc)
+                return n > 2 && anti_vertices.empty()
+                       && query_graph.num_true_edges_in() == n-1;
             return n > 2 && anti_vertices.empty()
             && query_graph.num_true_edges_in() == n*(n-1);
         }

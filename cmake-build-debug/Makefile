@@ -251,6 +251,33 @@ apps/testGraphhh.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine-directed.dir/build.make CMakeFiles/peregrine-directed.dir/apps/testGraphhh.cc.s
 .PHONY : apps/testGraphhh.cc.s
 
+core/DataGraph.o: core/DataGraph.cc.o
+
+.PHONY : core/DataGraph.o
+
+# target to build an object file
+core/DataGraph.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine-directed.dir/build.make CMakeFiles/peregrine-directed.dir/core/DataGraph.cc.o
+.PHONY : core/DataGraph.cc.o
+
+core/DataGraph.i: core/DataGraph.cc.i
+
+.PHONY : core/DataGraph.i
+
+# target to preprocess a source file
+core/DataGraph.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine-directed.dir/build.make CMakeFiles/peregrine-directed.dir/core/DataGraph.cc.i
+.PHONY : core/DataGraph.cc.i
+
+core/DataGraph.s: core/DataGraph.cc.s
+
+.PHONY : core/DataGraph.s
+
+# target to generate assembly for a file
+core/DataGraph.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/peregrine-directed.dir/build.make CMakeFiles/peregrine-directed.dir/core/DataGraph.cc.s
+.PHONY : core/DataGraph.cc.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -272,6 +299,9 @@ help:
 	@echo "... apps/testGraphhh.o"
 	@echo "... apps/testGraphhh.i"
 	@echo "... apps/testGraphhh.s"
+	@echo "... core/DataGraph.o"
+	@echo "... core/DataGraph.i"
+	@echo "... core/DataGraph.s"
 .PHONY : help
 
 
