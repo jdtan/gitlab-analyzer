@@ -4,7 +4,73 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <vector>
+#include <string>
 #include "Graph.hh"
+
+
+namespace std
+{
+    template<class T>
+    ostream& operator<<(ostream& stream, const std::pair<T, T> in) {
+        return stream << "(" << in.first << ", " << in.second << ")";
+    }
+
+    ostream& operator<<(ostream& stream, const vector<uint32_t>& in) {
+        stream << "[";
+        for(size_t i = 0; i < in.size(); ++i)
+            if(i < in.size() - 1)
+                stream << in[i] << ", ";
+            else
+                stream << in[i];
+        stream << "]";
+        return stream;
+    }
+
+    ostream& operator<<(ostream& stream, const vector<vector<uint32_t>>& in) {
+        stream << "[";
+        for(size_t i = 0; i < in.size(); ++i)
+            if(i < in.size() - 1)
+                stream << in[i] << ", ";
+            else
+                stream << in[i];
+        stream << "]";
+        return stream;
+    }
+
+    template<class T>
+    ostream& operator<<(ostream& stream, const vector<std::pair<T, T>>& in) {
+        stream << "[";
+        for(size_t i = 0; i < in.size(); ++i)
+            if(i < in.size() - 1)
+                stream << in[i] << ", ";
+            else
+                stream << in[i];
+        stream << "]";
+        return stream;
+    }
+}
+
+// Method 2
+namespace doctest
+{
+    template<> struct StringMaker<std::vector<uint32_t>>
+    {
+        static String convert(const std::vector<uint32_t> v) {
+            std::ostringstream oss;
+
+            size_t last = v.size() - 1;
+            oss << "{";
+            for(size_t i = 0; i < v.size(); ++i) {
+                oss << std::to_string(v[i]);
+                if (i != last)
+                    oss << ", ";
+            }
+            oss << "}";
+
+            return oss.str().c_str();
+        }
+    };
+}
 
 using namespace std;
 
@@ -89,7 +155,6 @@ void testAnalyzedPatternCase2(const Peregrine::AnalyzedPattern& analyzedPattern)
 void testAnalyzedPatternCase3(const Peregrine::AnalyzedPattern& analyzedPattern)  {
     SUBCASE("Testing AnalyzedPattern3") {
         CHECK(analyzedPattern.conditions == vector<pair<uint32_t, uint32_t>> {});
-        print_vector(analyzedPattern.order_groups);
         CHECK(analyzedPattern.order_groups == vector<vector<uint32_t>> {{2},{4}});
     }
 }
@@ -97,7 +162,6 @@ void testAnalyzedPatternCase3(const Peregrine::AnalyzedPattern& analyzedPattern)
 void testAnalyzedPatternCase4(const Peregrine::AnalyzedPattern& analyzedPattern)  {
     SUBCASE("Testing AnalyzedPattern4") {
         CHECK(analyzedPattern.conditions == vector<pair<uint32_t, uint32_t>> {pair(1, 2)});
-        print_vector(analyzedPattern.order_groups);
         CHECK(analyzedPattern.order_groups == vector<vector<uint32_t>> {{5},{6}});
     }
 }
