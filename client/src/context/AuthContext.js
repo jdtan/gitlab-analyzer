@@ -93,7 +93,7 @@ const AuthProvider = (props) => {
     setCommitsMaster,
     wordCount,
     setWordCount,
-    crCount, 
+    crCount,
     setCrCount,
     ownCount,
     setOwnCount,
