@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <vector>
 #include <string>
+#include "DataConverter.cc"
+#include "DataGraph.hh"
 #include "Graph.hh"
 
 
@@ -50,47 +52,7 @@ namespace std
     }
 }
 
-// Method 2
-namespace doctest
-{
-    template<> struct StringMaker<std::vector<uint32_t>>
-    {
-        static String convert(const std::vector<uint32_t> v) {
-            std::ostringstream oss;
-
-            size_t last = v.size() - 1;
-            oss << "{";
-            for(size_t i = 0; i < v.size(); ++i) {
-                oss << std::to_string(v[i]);
-                if (i != last)
-                    oss << ", ";
-            }
-            oss << "}";
-
-            return oss.str().c_str();
-        }
-    };
-}
-
 using namespace std;
-
-void print_vector(const vector<uint32_t>& myVector) {
-    cout << "{ ";
-    for (auto & i : myVector)
-        std::cout << i << ' ';
-    cout << "}\n";
-}
-
-void print_vector(const vector<vector<uint32_t>>& myVector) {
-    cout << "{ ";
-    for (const auto& i : myVector) {
-        cout << "{ ";
-        for (auto j : i)
-            std::cout << j << ' ';
-        cout << "} ";
-    }
-    cout << "}\n";
-}
 
 bool isTwoListsContainSameElement(const vector<uint32_t>& orgVertexList, const vector<uint32_t>& trueVertexList) {
     if (orgVertexList.size() != trueVertexList.size())
@@ -166,7 +128,7 @@ void testAnalyzedPatternCase4(const Peregrine::AnalyzedPattern& analyzedPattern)
     }
 }
 
-TEST_CASE("Test") {
+TEST_CASE("GraphTest") {
     std::string fileList[] = {"data/TestCase1.txt", "data/TestCase2.txt", "data/TestCase3.txt", "data/TestCase4.txt"};
 
     for (const auto& fileName : fileList) {
@@ -194,4 +156,18 @@ TEST_CASE("Test") {
             CHECK(tempGraph.num_anti_vertices() == 0);
         }
     }
+}
+
+TEST_CASE("DataConverterTest") {
+    using namespace Peregrine::DataConverter;
+    convert_data("data/TestCase1.txt", "", "data/output");
+
+    Peregrine::DataGraph graph = Peregrine::DataGraph("data/output");
+    CHECK(graph.original_id(0) == 1);
+    CHECK(graph.original_id(1) == 3);
+
+    Peregrine::adjlist myAdjList = graph.get_adj(0);
+    CHECK(myAdjList.length == 3);
+    std::vector adjList = {2, 3, 4};
+    CHECK(std::equal(adjList.begin(), adjList.end(), myAdjList.ptr[0]));
 }
