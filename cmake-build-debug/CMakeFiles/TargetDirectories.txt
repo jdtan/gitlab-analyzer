@@ -1,3 +1,0 @@
-/cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/cmake-build-debug/CMakeFiles/peregrine-directed.dir
-/cygdrive/e/OneDrive/SFU/SFU_Projects/Capstone_2021_Sping/peregrine-directed/cmake-build-debug/CMakeFiles/edit_cache.dir
