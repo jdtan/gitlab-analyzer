@@ -160,14 +160,25 @@ TEST_CASE("GraphTest") {
 
 TEST_CASE("DataConverterTest") {
     using namespace Peregrine::DataConverter;
-    convert_data("data/TestCase1.txt", "", "data/output");
 
-    Peregrine::DataGraph graph = Peregrine::DataGraph("data/output");
-    CHECK(graph.original_id(0) == 1);
-    CHECK(graph.original_id(1) == 3);
+    SUBCASE("TestCase1") {
+        convert_data("data/TestCase1.txt", "", "data/output");
 
-    Peregrine::adjlist myAdjList = graph.get_adj(0);
-    CHECK(myAdjList.length == 3);
-    std::vector adjList = {2, 3, 4};
-    CHECK(std::equal(adjList.begin(), adjList.end(), myAdjList.ptr[0]));
+        Peregrine::DataGraph graph = Peregrine::DataGraph("data/output");
+        CHECK(graph.original_id(0) == 1);
+        CHECK(graph.original_id(1) == 3);
+
+        Peregrine::adjlist myAdjList = graph.get_adj(1);
+        CHECK(myAdjList.length == 3);
+//        std::vector adjList = {2, 3, 4};
+//        CHECK(std::equal(adjList.begin(), adjList.end(), myAdjList.ptr[0]));
+    }
+
+    SUBCASE("Wiki-Vote") {
+        convert_data("data/Wiki-Vote.txt", "", "data/output");
+
+        Peregrine::DataGraph graph = Peregrine::DataGraph("data/output");
+        CHECK(graph.get_vertex_count() == 7115);
+        CHECK(graph.get_edge_count() == 103689);
+    }
 }

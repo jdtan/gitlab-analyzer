@@ -12,7 +12,6 @@
 #include "DataConverter.hh"
 
 // * Only outer edges will be considered
-// TODO: write the degrees first, and then the list of adj list
 namespace Peregrine::DataConverter {
     using namespace std;
 
@@ -26,7 +25,7 @@ namespace Peregrine::DataConverter {
             const string &edge_file,
             const string &label_file,
             const string &out_dir) {
-        uint32_t numEdges;
+        uint64_t numEdges;
         unordered_map<uint32_t, vector<uint32_t>> edge_list;
 
         read_file_and_generate_graph(edge_file, edge_list, numEdges);
@@ -77,7 +76,7 @@ namespace Peregrine::DataConverter {
     void read_file_and_generate_graph(
             const string &edgeListFile,
             unordered_map<uint32_t, vector<uint32_t>> &edge_list,
-            uint32_t &numEdges) {
+            uint64_t &numEdges) {
         ifstream edgeList(edgeListFile);
         string line;
         numEdges = 0;
@@ -88,6 +87,14 @@ namespace Peregrine::DataConverter {
                 numEdges++;
             }
         }
+    }
+
+    void add_edge_from_line(const string &line, unordered_map<uint32_t, vector<uint32_t>> &edge_list) {
+        uint32_t sourceVertex, dstVertex;
+        istringstream iss(line);
+        iss >> sourceVertex >> dstVertex;
+        edge_list[sourceVertex].push_back(dstVertex);
+        edge_list[dstVertex];
     }
 
     vector<pair<uint32_t, uint32_t>> get_sorted_degrees(unordered_map<uint32_t, vector<uint32_t>> &edge_list) {
@@ -104,22 +111,6 @@ namespace Peregrine::DataConverter {
         return degList;
     }
 
-    void add_edge_from_line(const string &line, unordered_map<uint32_t, vector<uint32_t>> &edge_list) {
-        uint32_t sourceVertex, dstVertex;
-        istringstream iss(line);
-        iss >> sourceVertex >> dstVertex;
-        edge_list[sourceVertex].push_back(dstVertex);
-        // TODO: why does the below thing not working?
-//        smatch m;
-//        regex r(R"((\d+)\D+(\d+))");
-//        regex_match(line, m, r);
-//        if (m.size() == 3) {
-//            uint32_t sourceVertex = stoi(m[1].str());
-//            uint32_t dstVertex = stoi(m[2].str());
-//            edge_list[sourceVertex].push_back(dstVertex);
-//        }
-    }
-
     void normalize_vertices(uint32_t *vertexMap, const vector<std::pair<uint32_t, uint32_t>> &deg_list) {
         uint32_t count = 0;
         for (auto const& vertex : deg_list) {
@@ -131,7 +122,7 @@ namespace Peregrine::DataConverter {
     void write_graph_to_drive(const std::string &outputDir,
                               std::unordered_map<uint32_t, std::vector<uint32_t>> &edge_list,
                               const std::vector<std::pair<uint32_t, uint32_t>> deg_list,
-                              uint32_t numEdges) {
+                              uint64_t numEdges) {
         string output_path = outputDir + "/data.bin";
         ofstream output(output_path.c_str(), std::ios::binary | ios::trunc);
 
@@ -143,7 +134,7 @@ namespace Peregrine::DataConverter {
         for (auto element : deg_list) {
             output.write(reinterpret_cast<const char *>(&element.second), sizeof(element.second));
             output.write(reinterpret_cast<const char *>(
-                    &edge_list[element.first][0]),edge_list[element.first].size() * sizeof(uint32_t));
+                                 &edge_list[element.first][0]),edge_list[element.first].size() * sizeof(uint32_t));
         }
         output.close();
     }
@@ -176,6 +167,6 @@ namespace Peregrine::DataConverter {
 
     void string_tolower(string &line) {
         transform(line.begin(), line.end(), line.begin(),
-                       [](unsigned char c){ return tolower(c); });
+                  [](unsigned char c){ return tolower(c); });
     }
 }

@@ -1,15 +1,17 @@
-#include <iostream>
-#include <memory>
-
+#include <thread>
+#include <atomic>
 #include <string>
-#include <cstring>
-#include <algorithm>
-#include <unordered_set>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <execution>
 
+#include <cassert>
+#include <fcntl.h>
 #include <unistd.h>
+#include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-
 #include <filesystem>
 
 #include "utils.hh"
@@ -42,15 +44,6 @@ namespace Peregrine
             std::cerr << "ERROR: Data graph could not be opened." << std::endl;
             exit(1);
         }
-
-        for (uint32_t i = 0; i < vertex_count; i++) {
-            uint32_t size = data_graph[i].length;
-            std::cout << ids[i] << ": ";
-            for (uint32_t j = 0; j < size; j++) {
-                std::cout << data_graph[i].ptr[j] << ", ";
-            }
-            std::cout << std::endl;
-        }
     }
 
     DataGraph::DataGraph(DataGraph &&other)
@@ -81,12 +74,10 @@ namespace Peregrine
 
         std::ifstream input_graph(data_path, std::ios::binary);
 
-        //TODO: Need to clarify about uin32_t
-        uint32_t numEdges;
         input_graph.read(reinterpret_cast<char *>(&vertex_count), sizeof(vertex_count));
-        input_graph.read(reinterpret_cast<char *>(&numEdges), sizeof(numEdges));
+        input_graph.read(reinterpret_cast<char *>(&edge_count), sizeof(edge_count));
 
-        // don't count the header (two 32-bit integers)
+        // don't count the header (one 32-bit integer and one 64 bit integer)
         uint64_t file_size = std::filesystem::file_size(data_path);
         assert(file_size % 4 == 0);
         uint64_t num_data_points = file_size / 4;
