@@ -46,40 +46,6 @@ namespace Peregrine::DataConverter {
         delete[] vertexMap;
     }
 
-    void write_labels_to_drive(const string& label_file, const string& out_dir, const uint32_t* ids_rev_map) {
-        if (file_exists(label_file))
-        {
-            auto t15 = utils::get_timestamp();
-            {
-                std::ifstream inputFile(label_file.c_str());
-
-                std::string output_labels(out_dir + "/labels.bin");
-                std::ofstream outputFile(output_labels.c_str(), std::ios::binary | std::ios::trunc);
-
-                std::string line;
-                while (std::getline(inputFile, line))
-                {
-                    // easy to predict properly
-                    if (line[0] == '#') continue;
-                    std::istringstream iss(line);
-
-                    uint32_t u;
-                    uint32_t new_u_label[2];
-                    iss >> u >> new_u_label[1];
-                    new_u_label[0] = ids_rev_map[u]+1;
-
-                    if (new_u_label[0] != 0) // ids_rev_map[u] != -1
-                    {
-                        outputFile.write(reinterpret_cast<char *>(&new_u_label[0]), 2 * sizeof(uint32_t));
-                    }
-                }
-                outputFile.close();
-            }
-            auto t16 = utils::get_timestamp();
-            utils::Log{} << "Converted labels to binary format in " << (t16-t15)/1e6 << "s" << "\n";
-        }
-    }
-
     void read_file_and_generate_graph(
             const string &edgeListFile,
             edge_list_directed &edgeList) {
@@ -124,33 +90,6 @@ namespace Peregrine::DataConverter {
             thread.join();
 
         combine_edge_list(inEdgeList, outEdgeList, edgeList);
-    }
-
-    void combine_edge_list(vector<unordered_map<uint32_t, vector<uint32_t>>> &inEdgeList,
-                           vector<unordered_map<uint32_t, vector<uint32_t>>> &outEdgeList,
-                           edge_list_directed &edgeList) {
-        for (unsigned int i = 0; i < inEdgeList.size(); i++) {
-            for (auto &element : inEdgeList[i]) {
-                edgeList.inEdgeList[element.first].insert(
-                        edgeList.inEdgeList[element.first].begin(),
-                        element.second.begin(),
-                        element.second.end());
-                edgeList.verticesList[element.first];
-
-                // * construct edge size at the same time
-                edgeList.numEdges += element.second.size();
-            }
-        }
-
-        for (unsigned int i = 0; i < outEdgeList.size(); i++) {
-            for (auto &element : outEdgeList[i]) {
-                edgeList.outEdgeList[element.first].insert(
-                        edgeList.outEdgeList[element.first].begin(),
-                        element.second.begin(),
-                        element.second.end());
-                edgeList.verticesList[element.first];
-            }
-        }
     }
 
     void populateGraph (unsigned int threadID,
@@ -200,12 +139,31 @@ namespace Peregrine::DataConverter {
         }
     }
 
-    void add_edge_from_line(const string &line, unordered_map<uint32_t, vector<uint32_t>> &edge_list) {
-        uint32_t sourceVertex, dstVertex;
-        istringstream iss(line);
-        iss >> sourceVertex >> dstVertex;
-        edge_list[sourceVertex].push_back(dstVertex);
-        edge_list[dstVertex];
+    void combine_edge_list(vector<unordered_map<uint32_t, vector<uint32_t>>> &inEdgeList,
+                           vector<unordered_map<uint32_t, vector<uint32_t>>> &outEdgeList,
+                           edge_list_directed &edgeList) {
+        for (unsigned int i = 0; i < inEdgeList.size(); i++) {
+            for (auto &element : inEdgeList[i]) {
+                edgeList.inEdgeList[element.first].insert(
+                        edgeList.inEdgeList[element.first].begin(),
+                        element.second.begin(),
+                        element.second.end());
+                edgeList.verticesList[element.first];
+
+                // * construct edge size at the same time
+                edgeList.numEdges += element.second.size();
+            }
+        }
+
+        for (unsigned int i = 0; i < outEdgeList.size(); i++) {
+            for (auto &element : outEdgeList[i]) {
+                edgeList.outEdgeList[element.first].insert(
+                        edgeList.outEdgeList[element.first].begin(),
+                        element.second.begin(),
+                        element.second.end());
+                edgeList.verticesList[element.first];
+            }
+        }
     }
 
     vector<pair<uint32_t, uint32_t>> get_sorted_degrees(edge_list_directed &edge_list) {
@@ -271,25 +229,6 @@ namespace Peregrine::DataConverter {
         concatenate_all_temp_files(outputDir, deg_list.size(), edge_list.numEdges);
     }
 
-    void concatenate_all_temp_files(string outputDir, uint32_t numVertices, uint64_t numEdges) {
-        string output_path = outputDir + "/data.bin";
-        ofstream output(output_path.c_str(), std::ios::binary | ios::trunc);
-
-        // write total number vertices and edges first
-        output.write(reinterpret_cast<const char *>(&numVertices), sizeof(numVertices));
-        output.write(reinterpret_cast<const char *>(&numEdges), sizeof(numEdges));
-
-        // * concatenate the temp files
-        for (unsigned  int i = 0; i < numThreads; i++) {
-            string thread_local_path(outputDir + "/temp/" + to_string(i) + ".bin");
-
-            ifstream input(thread_local_path.c_str(), std::ios::binary);
-            output << input.rdbuf();
-            remove(thread_local_path.c_str());
-        }
-        output.close();
-    }
-
     void write_thread_local_files(const std::string &outputDir,
                                   std::unordered_map<uint32_t, std::vector<uint32_t>> &edge_list,
                                   const std::vector<std::pair<uint32_t, uint32_t>> &deg_list,
@@ -312,6 +251,25 @@ namespace Peregrine::DataConverter {
         }
     }
 
+    void concatenate_all_temp_files(string outputDir, uint32_t numVertices, uint64_t numEdges) {
+        string output_path = outputDir + "/data.bin";
+        ofstream output(output_path.c_str(), std::ios::binary | ios::trunc);
+
+        // write total number vertices and edges first
+        output.write(reinterpret_cast<const char *>(&numVertices), sizeof(numVertices));
+        output.write(reinterpret_cast<const char *>(&numEdges), sizeof(numEdges));
+
+        // * concatenate the temp files
+        for (unsigned  int i = 0; i < numThreads; i++) {
+            string thread_local_path(outputDir + "/temp/" + to_string(i) + ".bin");
+
+            ifstream input(thread_local_path.c_str(), std::ios::binary);
+            output << input.rdbuf();
+            remove(thread_local_path.c_str());
+        }
+        output.close();
+    }
+
     void write_id_map_to_drive(const std::string &outputDir, const uint32_t* vertexMap, const uint32_t &size) {
         string output_path = outputDir + "/ids.bin";
         ofstream output(output_path.c_str(), std::ios::binary | ios::trunc);
@@ -319,27 +277,37 @@ namespace Peregrine::DataConverter {
         output.close();
     }
 
-    void check_if_directed_graph(string &line) {
-        string_tolower(line);
-        if (line.find("directed") != string::npos)
-            throw invalid_argument("This is not a directed graph!\n");
-    }
+    void write_labels_to_drive(const string& label_file, const string& out_dir, const uint32_t* ids_rev_map) {
+        if (file_exists(label_file))
+        {
+            auto t15 = utils::get_timestamp();
+            {
+                std::ifstream inputFile(label_file.c_str());
 
-    void check_has_num_edges_and_vertices(const string& line, uint32_t &total_num_vertices, uint32_t &total_num_edges) {
-        smatch m;
-        regex r("Nodes:[[:space:]]*(\\d+)[[:space:]]*Edges: (\\d+)");
+                std::string output_labels(out_dir + "/labels.bin");
+                std::ofstream outputFile(output_labels.c_str(), std::ios::binary | std::ios::trunc);
 
-        regex_match(line, m, r);
+                std::string line;
+                while (std::getline(inputFile, line))
+                {
+                    // easy to predict properly
+                    if (line[0] == '#') continue;
+                    std::istringstream iss(line);
 
-        if (m.size() != 2)
-            throw invalid_argument("Invalid SNAP format\n");
+                    uint32_t u;
+                    uint32_t new_u_label[2];
+                    iss >> u >> new_u_label[1];
+                    new_u_label[0] = ids_rev_map[u]+1;
 
-        total_num_edges = stoi(m[0].str());
-        total_num_vertices = stoi(m[1].str());
-    }
-
-    void string_tolower(string &line) {
-        transform(line.begin(), line.end(), line.begin(),
-                  [](unsigned char c){ return tolower(c); });
+                    if (new_u_label[0] != 0) // ids_rev_map[u] != -1
+                    {
+                        outputFile.write(reinterpret_cast<char *>(&new_u_label[0]), 2 * sizeof(uint32_t));
+                    }
+                }
+                outputFile.close();
+            }
+            auto t16 = utils::get_timestamp();
+            utils::Log{} << "Converted labels to binary format in " << (t16-t15)/1e6 << "s" << "\n";
+        }
     }
 }
