@@ -10,19 +10,19 @@ namespace Peregrine
 //
 //  SmallGraph PatternGenerator::clique(uint32_t size)
 //  {
-//    std::vector<std::pair<uint32_t, uint32_t>> edge_list;
+//    std::vector<std::pair<uint32_t, uint32_t>> edge_list_directed;
 //    for (uint32_t u = 1; u <= size; ++u)
 //    {
 //      for (uint32_t v = 1; v <= size; ++v)
 //      {
 //        if (u < v)
 //        {
-//          edge_list.push_back({u, v});
+//          edge_list_directed.push_back({u, v});
 //        }
 //      }
 //    }
 //
-//    return SmallGraph(edge_list);
+//    return SmallGraph(edge_list_directed);
 //  }
 //
 //  SmallGraph PatternGenerator::star(uint32_t size)
@@ -32,13 +32,13 @@ namespace Peregrine
 //      throw std::invalid_argument("Cannot generate a star on one vertex");
 //    }
 //
-//    std::vector<std::pair<uint32_t, uint32_t>> edge_list;
+//    std::vector<std::pair<uint32_t, uint32_t>> edge_list_directed;
 //    for (uint32_t u = 2; u <= size; ++u)
 //    {
-//      edge_list.emplace_back(1, u);
+//      edge_list_directed.emplace_back(1, u);
 //    }
 //
-//    return SmallGraph(edge_list);
+//    return SmallGraph(edge_list_directed);
 //  }
 //
 //  /**
@@ -547,10 +547,10 @@ namespace Peregrine
 //    return result;
 //  }
 //
-//  bool PatternGenerator::is_connected_pattern(Edges edge_list){
-//    uint32_t psize = edge_list.size();
+//  bool PatternGenerator::is_connected_pattern(Edges edge_list_directed){
+//    uint32_t psize = edge_list_directed.size();
 //    std::vector<std::vector<uint32_t>> graph(psize+1);
-//    for (auto &edge : edge_list)
+//    for (auto &edge : edge_list_directed)
 //    {
 //        graph[edge.first].push_back(edge.second);
 //        graph[edge.second].push_back(edge.first);

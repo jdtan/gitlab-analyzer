@@ -165,20 +165,20 @@ TEST_CASE("DataConverterTest") {
         convert_data("data/TestCase1.txt", "", "data/output");
 
         Peregrine::DataGraph graph = Peregrine::DataGraph("data/output");
+        CHECK(graph.get_vertex_count() == 4);
+        CHECK(graph.get_edge_count() == 5);
         CHECK(graph.original_id(0) == 1);
-        CHECK(graph.original_id(1) == 3);
+        CHECK(graph.original_id(1) == 2);
 
         Peregrine::adjlist myAdjList = graph.get_adj(1);
         CHECK(myAdjList.length == 3);
-//        std::vector adjList = {2, 3, 4};
-//        CHECK(std::equal(adjList.begin(), adjList.end(), myAdjList.ptr[0]));
     }
 
-    SUBCASE("Wiki-Vote") {
-        convert_data("data/Wiki-Vote.txt", "", "data/output");
-
-        Peregrine::DataGraph graph = Peregrine::DataGraph("data/output");
-        CHECK(graph.get_vertex_count() == 7115);
-        CHECK(graph.get_edge_count() == 103689);
-    }
+//    SUBCASE("Wiki-Vote") {
+//        convert_data("data/Wiki-Vote.txt", "", "data/output");
+//
+//        Peregrine::DataGraph graph = Peregrine::DataGraph("data/output");
+//        CHECK(graph.get_vertex_count() == 7115);
+//        CHECK(graph.get_edge_count() == 103689);
+//    }
 }
