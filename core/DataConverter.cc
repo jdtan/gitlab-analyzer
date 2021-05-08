@@ -36,6 +36,7 @@ namespace Peregrine::DataConverter {
         edge_list_directed edge_list;
 
         read_file_and_generate_graph(edge_file, edge_list);
+        // pair<vertexID, sum of the inDeg and outDeg for that vertex>
         vector<pair<uint32_t, uint32_t>> deg_list = get_sorted_degrees(edge_list);
         auto* vertexMap = new uint32_t[deg_list.size()];
         normalize_vertices(vertexMap, deg_list);
@@ -89,6 +90,14 @@ namespace Peregrine::DataConverter {
         for (auto &thread : pool)
             thread.join();
 
+        int temp = 0;
+        for (auto element : inEdgeList) {
+            for (auto i : element) {
+                temp += i.second.size();
+            }
+        }
+        cout << temp << endl;
+
         combine_edge_list(inEdgeList, outEdgeList, edgeList);
     }
 
@@ -115,6 +124,8 @@ namespace Peregrine::DataConverter {
                 cursor++;
             cursor++;
         }
+
+        cout << cursor << endl;
 
         while (cursor < end) {
             // find the end of this edge
@@ -148,8 +159,9 @@ namespace Peregrine::DataConverter {
                         edgeList.inEdgeList[element.first].begin(),
                         element.second.begin(),
                         element.second.end());
-                edgeList.verticesList[element.first];
+                edgeList.verticesList.insert(element.first);
 
+                // TODO: Fix edge size
                 // * construct edge size at the same time
                 edgeList.numEdges += element.second.size();
             }
@@ -161,7 +173,7 @@ namespace Peregrine::DataConverter {
                         edgeList.outEdgeList[element.first].begin(),
                         element.second.begin(),
                         element.second.end());
-                edgeList.verticesList[element.first];
+                edgeList.verticesList.insert(element.first);
             }
         }
     }
@@ -169,19 +181,35 @@ namespace Peregrine::DataConverter {
     vector<pair<uint32_t, uint32_t>> get_sorted_degrees(edge_list_directed &edge_list) {
         vector<pair<uint32_t, uint32_t>> degList;
 
-        // ! transform_reduce
         // * Sum up the out degrees and in degrees
-        for (auto element : edge_list.verticesList) {
-            auto vertex = element.first;
-            uint32_t inDeg = 0, outDeg = 0;
+//        for (auto element : edge_list.verticesList) {
+//            auto vertex = element;
+//            uint32_t inDeg = 0, outDeg = 0;
+//
+//            if(edge_list.outEdgeList.find(vertex) != edge_list.outEdgeList.end())
+//                outDeg = edge_list.outEdgeList[vertex].size();
+//            if(edge_list.inEdgeList.find(vertex) != edge_list.inEdgeList.end())
+//                outDeg = edge_list.inEdgeList[vertex].size();
+//
+//            degList.push_back(pair(vertex, inDeg + outDeg));
+//        }
 
-            if(edge_list.outEdgeList.find(vertex) != edge_list.outEdgeList.end())
-                outDeg = edge_list.outEdgeList[vertex].size();
-            if(edge_list.inEdgeList.find(vertex) != edge_list.inEdgeList.end())
-                outDeg = edge_list.inEdgeList[vertex].size();
+        transform(
+                // TODO: Check
+//                execution::par,
+                edge_list.verticesList.cbegin(), edge_list.verticesList.cend(),
+                back_inserter(degList),
+                [&edge_list](const uint32_t &element) -> pair<uint32_t, uint32_t> {
+                    uint32_t vertex = element;
+                    uint32_t inDeg = 0, outDeg = 0;
 
-            degList.push_back(pair(vertex, inDeg + outDeg));
-        }
+                    if(edge_list.outEdgeList.find(vertex) != edge_list.outEdgeList.cend())
+                        outDeg = edge_list.outEdgeList[vertex].size();
+                    if(edge_list.inEdgeList.find(vertex) != edge_list.inEdgeList.cend())
+                        outDeg = edge_list.inEdgeList[vertex].size();
+
+                    return pair(vertex, inDeg + outDeg);
+                });
 
         sort(degList.begin(), degList.end(),
              [](const pair<uint32_t, uint32_t>& first, const pair<uint32_t, uint32_t>& second)
@@ -245,7 +273,8 @@ namespace Peregrine::DataConverter {
         ofstream output(filePath.c_str(), std::ios::binary | ios::trunc);
         for (auto i = startIndex; i < endIndex; i++) {
             auto element = deg_list.at(i);
-            output.write(reinterpret_cast<const char *>(&element.second), sizeof(element.second));
+            uint32_t numEdges = edge_list[element.first].size();
+            output.write(reinterpret_cast<const char *>(&numEdges), sizeof(numEdges));
             output.write(reinterpret_cast<const char *>(
                                  &edge_list[element.first][0]),edge_list[element.first].size() * sizeof(uint32_t));
         }

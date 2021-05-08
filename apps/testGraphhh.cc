@@ -174,11 +174,11 @@ TEST_CASE("DataConverterTest") {
         CHECK(myAdjList.length == 3);
     }
 
-//    SUBCASE("Wiki-Vote") {
-//        convert_data("data/Wiki-Vote.txt", "", "data/output");
-//
-//        Peregrine::DataGraph graph = Peregrine::DataGraph("data/output");
-//        CHECK(graph.get_vertex_count() == 7115);
-//        CHECK(graph.get_edge_count() == 103689);
-//    }
+    SUBCASE("Wiki-Vote") {
+        convert_data("data/Wiki-Vote.txt", "", "data/output");
+
+        Peregrine::DataGraph graph = Peregrine::DataGraph("data/output");
+        CHECK(graph.get_vertex_count() == 7115);
+        CHECK(graph.get_edge_count() == 103689);
+    }
 }

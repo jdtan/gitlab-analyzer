@@ -2,13 +2,13 @@
 #define DATA_CONVERTER_HH
 
 #include <string>
+#include <unordered_set>
 
 namespace Peregrine::DataConverter
 {
     struct edge_list_directed {
         uint64_t numEdges = 0;
-        // ! TODO: change this to vector
-        std::unordered_map<uint32_t, uint32_t> verticesList;
+        std::unordered_set<uint32_t> verticesList;
 
         std::unordered_map<uint32_t, std::vector<uint32_t>> inEdgeList;
         std::unordered_map<uint32_t, std::vector<uint32_t>> outEdgeList;

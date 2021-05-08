@@ -1109,6 +1109,7 @@ namespace Peregrine
     template <Graph::Labelling L, bool HAE>
     void get_next_cand(std::vector<uint32_t> &xsection, unsigned idx, const partial_match<L> &mvgs)
     {
+        // ! union of connected vertices
       // query vertices already matched, and connected from qo[key]
       std::vector<uint32_t> Ucon;
       const auto &true_edges = vgs.get_neighbours(qo[idx]);
@@ -1134,8 +1135,10 @@ namespace Peregrine
       for (uint32_t i = 0; i < idx; ++i)
       {
         if constexpr (stoppable == STOPPABLE) pthread_testcancel();
-        if (qo[i] < qo[idx]) lower_bound = std::max(lower_bound, qo[i]);
-        else if (qo[i] > qo[idx]) upper_bound = std::min(upper_bound, qo[i]);
+        if (qo[i] < qo[idx])
+            lower_bound = std::max(lower_bound, qo[i]);
+        else if (qo[i] > qo[idx])
+            upper_bound = std::min(upper_bound, qo[i]);
       }
 
       // enforce total ordering on core vertices by only considering correct

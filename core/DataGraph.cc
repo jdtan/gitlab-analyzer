@@ -81,10 +81,10 @@ namespace Peregrine
         uint64_t file_size = std::filesystem::file_size(data_path);
         assert(file_size % 4 == 0);
         uint64_t num_data_points = file_size / 4;
-        graph_in_memory = std::make_unique<uint32_t[]>(num_data_points - 2);
+        graph_in_memory = std::make_unique<uint32_t[]>(num_data_points - 3);
         data_graph = std::make_unique<adjlist[]>(vertex_count);
 
-        input_graph.read(reinterpret_cast<char *>(graph_in_memory.get()), (num_data_points - 2)*sizeof(uint32_t));
+        input_graph.read(reinterpret_cast<char *>(graph_in_memory.get()), (num_data_points - 3)*sizeof(uint32_t));
 
         uint32_t cursor = 0;
         for (uint32_t i = 0; i < vertex_count; i++)
