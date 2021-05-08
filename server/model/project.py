@@ -46,7 +46,8 @@ class Project(DataObject):
         self.__created_date: str = gitlab_project.created_at
         self.__updated_date: str = gitlab_project.last_activity_at
 
-        self.__owner_id: int = gitlab_project.owner['id']
+        # This line throws an error when testing on the SFU GitLab server
+        # self.__owner_id: int = gitlab_project.owner['id']
 
         # super().__init__() MUST BE AFTER CURRENT CLASS CONSTRUCTION IS DONE
         super().__init__()
@@ -99,7 +100,3 @@ class Project(DataObject):
     @property
     def updated_date(self) -> str:
         return self.__updated_date
-
-    @property
-    def owner_id(self) -> int:
-        return self.__owner_id
