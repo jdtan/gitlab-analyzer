@@ -46,11 +46,12 @@
 
 .multipleSelection {
     height: 50px;
-    width: 33%;
+    width: 370px;
     white-space: nowrap;
     overflow: auto;
 }
 
 .button {
     margin-top: 50px;
+    padding-bottom: 70px;
 }

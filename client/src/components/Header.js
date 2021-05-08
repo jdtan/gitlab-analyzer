@@ -11,7 +11,7 @@ import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 
 const Header = () => {
-  const { setUserMapped, userMapped, selectedRepo } = useAuth();
+  const { setUserMapped, userMapped, selectedRepo, setSelectedOptions } = useAuth();
 
   useEffect(() => [selectedRepo]);
 
@@ -23,6 +23,7 @@ const Header = () => {
       }
     );
     console.log(resetMap);
+    setSelectedOptions([]);
     setUserMapped(false);
   };
   return (
