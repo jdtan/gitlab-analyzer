@@ -90,14 +90,6 @@ namespace Peregrine::DataConverter {
         for (auto &thread : pool)
             thread.join();
 
-        int temp = 0;
-        for (auto element : inEdgeList) {
-            for (auto i : element) {
-                temp += i.second.size();
-            }
-        }
-        cout << temp << endl;
-
         combine_edge_list(inEdgeList, outEdgeList, edgeList);
     }
 
@@ -108,7 +100,7 @@ namespace Peregrine::DataConverter {
                         const char *graph,
                         size_t fileSize) {
         size_t end, start = threadID * chunkSize;
-        if (threadID <= numThreads - 1)
+        if (threadID == numThreads - 1)
             end = fileSize;
         else
             end = start + chunkSize;
@@ -120,12 +112,12 @@ namespace Peregrine::DataConverter {
             cursor = 0;
         else {
             cursor = start;
-            while (cursor < fileSize && graph[cursor] != '\n')
+            if (graph[cursor-1] != '\n') {
+                while (cursor < fileSize && graph[cursor] != '\n')
+                    cursor++;
                 cursor++;
-            cursor++;
+            }
         }
-
-        cout << cursor << endl;
 
         while (cursor < end) {
             // find the end of this edge
@@ -161,7 +153,6 @@ namespace Peregrine::DataConverter {
                         element.second.end());
                 edgeList.verticesList.insert(element.first);
 
-                // TODO: Fix edge size
                 // * construct edge size at the same time
                 edgeList.numEdges += element.second.size();
             }
