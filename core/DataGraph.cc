@@ -21,6 +21,39 @@
 namespace Peregrine
 {
     void DataGraph::from_smallgraph(const SmallGraph &pp) {
+        SmallGraph p(pp);
+        graph_in_memory = std::make_unique<uint32_t[]>(2 * p.num_true_edges_in());
+        data_graph = std::make_unique<adjlist[]>(p.num_vertices()+1);
+
+        uint32_t cursor = 0;
+        for (uint32_t v = 1; v <= p.num_vertices(); ++v) {
+            std::sort(p.true_adj_list_out.at(v).begin(), p.true_adj_list_out.at(v).end());
+
+            std::memcpy(&graph_in_memory[cursor], &p.true_adj_list_out.at(v)[0], p.true_adj_list_out.at(v).size() * sizeof(uint32_t));
+            data_graph[v-1].ptr = &graph_in_memory[cursor];
+            data_graph[v-1].length = p.true_adj_list_out.at(v).size();
+            cursor += p.true_adj_list_out.at(v).size();
+        }
+
+        vertex_count = p.num_vertices();
+        edge_count = p.num_true_edges_in();
+
+        labels = std::make_unique<uint32_t[]>(vertex_count+1);
+        if (p.labelling == Graph::LABELLED)
+        {
+            labelled_graph = true;
+            for (uint32_t u = 0; u < p.labels.size(); ++u)
+            {
+                labels[u+1] = p.labels[u];
+            }
+
+            uint32_t min_label = *std::min_element(p.labels.cbegin(), p.labels.cend());
+            uint32_t max_label = *std::max_element(p.labels.cbegin(), p.labels.cend());
+            label_range = std::make_pair(min_label, max_label);
+        }
+
+        ids = std::make_unique<uint32_t[]>(vertex_count+1);
+        std::iota(&ids[0], &ids[vertex_count+1], 0);
     }
 
     DataGraph::DataGraph(const SmallGraph &p) {
