@@ -42,7 +42,7 @@ fi
 # Arg2 represents target platform. Its possible values are 'android' or 'linux'.
 # If $COMPILERVARS_PLATFORM environment variable is defined,
 # the default value of $TBB_TARGET_PLATFORM equals to its value.
-# Otherwise it equals to 'linux'.
+# Otherwise it equals to 'linux'.cat ini
 if [ "$2" = "linux" -o "$2" = "android" ]; then
     TBB_TARGET_PLATFORM=$2
 elif [ "$COMPILERVARS_PLATFORM" = "linux" -o "$COMPILERVARS_PLATFORM" = "android" ]; then
