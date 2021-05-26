@@ -12,6 +12,7 @@
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <filesystem>
 
 #include <regex>
 
@@ -220,32 +221,55 @@ namespace Peregrine::DataConverter {
     void write_graph_to_drive(const std::string &outputDir,
                               edge_list_directed &edge_list,
                               const std::vector<std::pair<uint32_t, uint32_t>> &deg_list) {
+        filesystem::create_directory(outputDir + "/temp/out");
+        filesystem::create_directory(outputDir + "/temp/in");
+        string tempOutputDirOutEdge = outputDir + "/temp/out";
+        string tempOutputDirInEdge = outputDir + "/temp/in";
+
         vector<thread> pool;
         int taskSize = deg_list.size() / numThreads;
 
         // * edge case when the graph is really small
-        if (taskSize <= 0)
+        if (taskSize <= 0) {
             pool.emplace_back(
                     write_thread_local_files,
-                    outputDir,
+                    tempOutputDirOutEdge,
                     ref(edge_list.outEdgeList),
                     ref(deg_list),
                     deg_list.size(),
                     0);
+
+            pool.emplace_back(
+                    write_thread_local_files,
+                    tempOutputDirInEdge,
+                    ref(edge_list.inEdgeList),
+                    ref(deg_list),
+                    deg_list.size(),
+                    0);
+        }
         else {
-            for (unsigned int i = 0; i < numThreads; i++)
+            for (unsigned int i = 0; i < numThreads; i++) {
                 pool.emplace_back(
                         write_thread_local_files,
-                        outputDir,
+                        tempOutputDirOutEdge,
                         ref(edge_list.outEdgeList),
                         deg_list,
                         taskSize,
                         i);
+
+                pool.emplace_back(
+                        write_thread_local_files,
+                        tempOutputDirInEdge,
+                        ref(edge_list.inEdgeList),
+                        deg_list,
+                        taskSize,
+                        i);
+            }
         }
         for (auto &thread : pool)
             thread.join();
 
-        concatenate_all_temp_files(outputDir, deg_list.size(), edge_list.numEdges);
+        concatenateAllTempFilesForOutEdges(outputDir, deg_list.size(), edge_list.numEdges);
     }
 
     void write_thread_local_files(const std::string &outputDir,
@@ -253,7 +277,7 @@ namespace Peregrine::DataConverter {
                                   const std::vector<std::pair<uint32_t, uint32_t>> &deg_list,
                                   unsigned int taskSize,
                                   unsigned int threadID) {
-        string filePath = outputDir + "/temp/" + to_string(threadID) + ".bin";
+        string filePath = outputDir + to_string(threadID) + ".bin";
         unsigned int startIndex = taskSize * threadID, endIndex;
 
         if (threadID == numThreads - 1)
@@ -271,23 +295,31 @@ namespace Peregrine::DataConverter {
         }
     }
 
-    void concatenate_all_temp_files(string outputDir, uint32_t numVertices, uint64_t numEdges) {
-        string output_path = outputDir + "/data.bin";
-        ofstream output(output_path.c_str(), std::ios::binary | ios::trunc);
+    void concatenateAllTempFilesForOutEdges(string outputDir, uint32_t numVertices, uint64_t numEdges) {
+        string output_path_out = outputDir + "/data_out.bin";
+        ofstream output_out(output_path_out.c_str(), std::ios::binary | ios::trunc);
+
+        string output_path_in = outputDir + "/data_in.bin";
+        ofstream output_in(output_path_in.c_str(), std::ios::binary | ios::trunc);
 
         // write total number vertices and edges first
-        output.write(reinterpret_cast<const char *>(&numVertices), sizeof(numVertices));
-        output.write(reinterpret_cast<const char *>(&numEdges), sizeof(numEdges));
+        output_out.write(reinterpret_cast<const char *>(&numVertices), sizeof(numVertices));
+        output_out.write(reinterpret_cast<const char *>(&numEdges), sizeof(numEdges));
 
         // * concatenate the temp files
         for (unsigned  int i = 0; i < numThreads; i++) {
-            string thread_local_path(outputDir + "/temp/" + to_string(i) + ".bin");
+            string thread_local_path_out(outputDir + "/temp/out" + to_string(i) + ".bin");
+            string thread_local_path_in(outputDir + "/temp/in" + to_string(i) + ".bin");
 
-            ifstream input(thread_local_path.c_str(), std::ios::binary);
-            output << input.rdbuf();
-            remove(thread_local_path.c_str());
+            ifstream input_out(thread_local_path_out.c_str(), std::ios::binary);
+            output_out << input_out.rdbuf();
+            remove(thread_local_path_out.c_str());
+
+            ifstream input_in(thread_local_path_in.c_str(), std::ios::binary);
+            output_in << input_in.rdbuf();
+            remove(thread_local_path_in.c_str());
         }
-        output.close();
+        output_out.close();
     }
 
     void write_id_map_to_drive(const std::string &outputDir, const uint32_t* vertexMap, const uint32_t &size) {

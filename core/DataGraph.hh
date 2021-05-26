@@ -37,7 +37,8 @@ namespace Peregrine
 
         const std::vector<uint32_t> &get_upper_bounds(uint32_t v) const;
         const std::vector<uint32_t> &get_lower_bounds(uint32_t v) const;
-        const adjlist &get_adj(uint32_t v) const;
+        const adjlist &get_adj_out(uint32_t v) const;
+        const adjlist &get_adj_in(uint32_t v) const;
         uint32_t get_vgs_count() const;
         uint32_t get_vertex_count() const;
         uint64_t get_edge_count() const;
@@ -62,11 +63,15 @@ namespace Peregrine
         std::unique_ptr<uint32_t[]> labels;
         std::pair<uint32_t, uint32_t> label_range;
         std::unique_ptr<uint32_t[]> ids;
-        std::unique_ptr<adjlist[]> data_graph;
-        std::unique_ptr<uint32_t[]> graph_in_memory;
+        std::unique_ptr<adjlist[]> data_graph_out;
+        std::unique_ptr<uint32_t[]> graph_in_memory_out;
+        std::unique_ptr<adjlist[]> data_graph_in;
+        std::unique_ptr<uint32_t[]> graph_in_memory_in;
         std::unordered_set<uint32_t> known_labels;
 
-        void read_data_graph(const std::string &path_str);
+        void read_data_graph_out_edges(const std::string &path_str);
+
+        void read_data_graph_in_edges(const std::string &path_str);
 
         void read_labels_graph(const std::string &path_str);
 

@@ -46,7 +46,7 @@ namespace Peregrine::DataConverter
                                   unsigned int taskSize,
                                   unsigned int threadID);
 
-    void concatenate_all_temp_files(std::string outputDir, uint32_t numVertices, uint64_t numEdges);
+    void concatenateAllTempFilesForOutEdges(std::string outputDir, uint32_t numVertices, uint64_t numEdges);
 
     void write_id_map_to_drive(const std::string &outputDir, const uint32_t* vertexMap, const uint32_t &size);
 

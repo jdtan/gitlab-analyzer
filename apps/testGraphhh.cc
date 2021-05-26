@@ -170,7 +170,7 @@ TEST_CASE("DataConverterTest") {
         CHECK(graph.original_id(0) == 1);
         CHECK(graph.original_id(1) == 2);
 
-        Peregrine::adjlist myAdjList = graph.get_adj(1);
+        Peregrine::adjlist myAdjList = graph.get_adj_out(1);
         CHECK(myAdjList.length == 3);
     }
 

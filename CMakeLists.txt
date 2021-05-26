@@ -13,6 +13,7 @@ add_executable(
         ./core/DataConverter.cc
         ./core/PatternGenerator.hh
         ./core/PatternGenerator.cc
+        ./core/PatternMatching.hh
         ./apps/testGraphhh.cc
         ./apps/count.cc
         ./apps/existence-query.cc

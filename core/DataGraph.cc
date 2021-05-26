@@ -22,17 +22,26 @@ namespace Peregrine
 {
     void DataGraph::from_smallgraph(const SmallGraph &pp) {
         SmallGraph p(pp);
-        graph_in_memory = std::make_unique<uint32_t[]>(2 * p.num_true_edges_in());
-        data_graph = std::make_unique<adjlist[]>(p.num_vertices()+1);
+        graph_in_memory_out = std::make_unique<uint32_t[]>(2 * p.num_true_edges_in());
+        data_graph_out = std::make_unique<adjlist[]>(p.num_vertices() + 1);
 
         uint32_t cursor = 0;
         for (uint32_t v = 1; v <= p.num_vertices(); ++v) {
             std::sort(p.true_adj_list_out.at(v).begin(), p.true_adj_list_out.at(v).end());
 
-            std::memcpy(&graph_in_memory[cursor], &p.true_adj_list_out.at(v)[0], p.true_adj_list_out.at(v).size() * sizeof(uint32_t));
-            data_graph[v-1].ptr = &graph_in_memory[cursor];
-            data_graph[v-1].length = p.true_adj_list_out.at(v).size();
+            std::memcpy(&graph_in_memory_out[cursor], &p.true_adj_list_out.at(v)[0], p.true_adj_list_out.at(v).size() * sizeof(uint32_t));
+            data_graph_out[v - 1].ptr = &graph_in_memory_out[cursor];
+            data_graph_out[v - 1].length = p.true_adj_list_out.at(v).size();
             cursor += p.true_adj_list_out.at(v).size();
+        }
+
+        for (uint32_t v = 1; v <= p.num_vertices(); ++v) {
+            std::sort(p.true_adj_list_in.at(v).begin(), p.true_adj_list_in.at(v).end());
+
+            std::memcpy(&graph_in_memory_in[cursor], &p.true_adj_list_in.at(v)[0], p.true_adj_list_in.at(v).size() * sizeof(uint32_t));
+            data_graph_in[v - 1].ptr = &graph_in_memory_in[cursor];
+            data_graph_in[v - 1].length = p.true_adj_list_in.at(v).size();
+            cursor += p.true_adj_list_in.at(v).size();
         }
 
         vertex_count = p.num_vertices();
@@ -64,7 +73,8 @@ namespace Peregrine
         std::filesystem::path data_graph_path(path_str);
         if (std::filesystem::is_directory(data_graph_path))
         {
-            read_data_graph(path_str);
+            read_data_graph_out_edges(path_str);
+            read_data_graph_in_edges(path_str);
             read_ids_graph(path_str);
             read_labels_graph(path_str);
         }
@@ -88,17 +98,17 @@ namespace Peregrine
               labels(std::move(other.labels)),
               label_range(other.label_range),
               ids(std::move(other.ids)),
-              data_graph(std::move(other.data_graph)),
-              graph_in_memory(std::move(other.graph_in_memory)),
+              data_graph_out(std::move(other.data_graph_out)),
+              graph_in_memory_out(std::move(other.graph_in_memory_out)),
               known_labels(other.known_labels)
     {
         other.vertex_count = 0;
         other.edge_count = 0;
     }
 
-    void DataGraph::read_data_graph(const std::string &path_str) {
+    void DataGraph::read_data_graph_out_edges(const std::string &path_str) {
         std::filesystem::path data_graph_path(path_str);
-        std::filesystem::path data_path(data_graph_path / "data.bin");
+        std::filesystem::path data_path(data_graph_path / "data_out.bin");
         if (!std::filesystem::exists(data_path))
         {
             std::cerr << "ERROR: Data graph could not be opened." << std::endl;
@@ -114,17 +124,46 @@ namespace Peregrine
         uint64_t file_size = std::filesystem::file_size(data_path);
         assert(file_size % 4 == 0);
         uint64_t num_data_points = file_size / 4;
-        graph_in_memory = std::make_unique<uint32_t[]>(num_data_points - 3);
-        data_graph = std::make_unique<adjlist[]>(vertex_count);
+        graph_in_memory_out = std::make_unique<uint32_t[]>(num_data_points - 3);
+        data_graph_out = std::make_unique<adjlist[]>(vertex_count);
 
-        input_graph.read(reinterpret_cast<char *>(graph_in_memory.get()), (num_data_points - 3)*sizeof(uint32_t));
+        input_graph.read(reinterpret_cast<char *>(graph_in_memory_out.get()), (num_data_points - 3) * sizeof(uint32_t));
 
         uint32_t cursor = 0;
         for (uint32_t i = 0; i < vertex_count; i++)
         {
-            data_graph[i].length = graph_in_memory[cursor];
-            data_graph[i].ptr = &graph_in_memory[++cursor];
-            cursor += data_graph[i].length;
+            data_graph_out[i].length = graph_in_memory_out[cursor];
+            data_graph_out[i].ptr = &graph_in_memory_out[++cursor];
+            cursor += data_graph_out[i].length;
+        }
+    }
+
+    void DataGraph::read_data_graph_in_edges(const std::string &path_str) {
+        std::filesystem::path data_graph_path(path_str);
+        std::filesystem::path data_path(data_graph_path / "data_in.bin");
+        if (!std::filesystem::exists(data_path))
+        {
+            std::cerr << "ERROR: Data graph could not be opened." << std::endl;
+            exit(1);
+        }
+
+        std::ifstream input_graph(data_path, std::ios::binary);
+
+        // don't count the header (one 32-bit integer and one 64 bit integer)
+        uint64_t file_size = std::filesystem::file_size(data_path);
+        assert(file_size % 4 == 0);
+        uint64_t num_data_points = file_size / 4;
+        graph_in_memory_in = std::make_unique<uint32_t[]>(num_data_points);
+        data_graph_in = std::make_unique<adjlist[]>(vertex_count);
+
+        input_graph.read(reinterpret_cast<char *>(graph_in_memory_in.get()), num_data_points * sizeof(uint32_t));
+
+        uint32_t cursor = 0;
+        for (uint32_t i = 0; i < vertex_count; i++)
+        {
+            data_graph_in[i].length = graph_in_memory_in[cursor];
+            data_graph_in[i].ptr = &graph_in_memory_in[++cursor];
+            cursor += data_graph_in[i].length;
         }
     }
 
@@ -219,9 +258,14 @@ namespace Peregrine
         return label_range;
     }
 
-    const adjlist &DataGraph::get_adj(uint32_t v) const
+    const adjlist &DataGraph::get_adj_out(uint32_t v) const
     {
-        return data_graph[v-1];
+        return data_graph_out[v - 1];
+    }
+
+    const adjlist &DataGraph::get_adj_in(uint32_t v) const
+    {
+        return data_graph_in[v - 1];
     }
 
     const SmallGraph &DataGraph::get_vgs(unsigned vgsi) const
