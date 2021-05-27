@@ -1001,7 +1001,7 @@ namespace Peregrine {
 
         template<Graph::Labelling L, bool HAE>
         void get_next_cand(std::vector<uint32_t> &xsection, unsigned idx, const partial_match<L> &mvgs) {
-            // ! Ucon = union of connected vertices
+            // * Ucon = union of connected vertices
             // query vertices already matched, and connected from qo[key]
             std::vector<uint32_t> UconOut;
             std::vector<uint32_t> UconIn;
@@ -1029,10 +1029,11 @@ namespace Peregrine {
                 }
             }
 
-            const adjlist &adj = gpb->get_adj_out(mvgs.at(Ucon[0]));
+            const adjlist &data_adj_out = gpb->get_adj_out(mvgs.at(UconOut[0]));
 
-            uint32_t *start = adj.ptr;
-            uint32_t *end = adj.ptr + adj.length;
+            //TODO: need to check
+            uint32_t *start = data_adj_out.ptr;
+            uint32_t *end = data_adj_out.ptr + data_adj_out.length;
 
             uint32_t lower_bound = 0;
             uint32_t upper_bound = static_cast<uint32_t>(-1); // largest possible
@@ -1048,24 +1049,40 @@ namespace Peregrine {
             // range of candidate data vertices
 
             start = lower_bound > 0
-                    ? std::upper_bound(adj.ptr, adj.ptr + adj.length, mvgs.at(lower_bound))
+                    ? std::upper_bound(data_adj_out.ptr, data_adj_out.ptr + data_adj_out.length, mvgs.at(lower_bound))
                     : start;
 
             end = upper_bound < (uint32_t) -1
-                  ? std::lower_bound(start, adj.ptr + adj.length, mvgs.at(upper_bound))
+                  ? std::lower_bound(start, data_adj_out.ptr + data_adj_out.length, mvgs.at(upper_bound))
                   : end;
 
             xsection.assign(start, end);
 
-            for (unsigned i = 1; i < Ucon.size(); ++i) {
+            for (unsigned i = 1; i < UconOut.size(); ++i) {
                 if constexpr (stoppable == STOPPABLE) pthread_testcancel();
 
                 std::vector<uint32_t> t;
                 t.swap(xsection);
 
-                const uint32_t n = Ucon[i];
+                const uint32_t n = UconOut[i];
                 const uint32_t v = mvgs.at(n);
                 const adjlist &adj = gpb->get_adj_out(v);
+
+                std::set_intersection(std::execution::unseq,
+                                      t.cbegin(), t.cend(),
+                                      adj.ptr, adj.ptr + adj.length,
+                                      std::back_inserter(xsection));
+            }
+
+            for (unsigned i = 0; i < UconIn.size(); ++i) {
+                if constexpr (stoppable == STOPPABLE) pthread_testcancel();
+
+                std::vector<uint32_t> t;
+                t.swap(xsection);
+
+                const uint32_t n = UconIn[i];
+                const uint32_t v = mvgs.at(n);
+                const adjlist &adj = gpb->get_adj_in(v);
 
                 std::set_intersection(std::execution::unseq,
                                       t.cbegin(), t.cend(),
@@ -1086,32 +1103,59 @@ namespace Peregrine {
 
             // can't guard this with HAE since vertex induced doesn't count as HAE
             {
-                std::vector<uint32_t> nUcon;
-                const auto &not_edges = vgs.get_anti_neighbours(qo[idx]);
+                std::vector<uint32_t> nUconOut;
+                std::vector<uint32_t> nUconIn;
+                const auto &not_edges_out = vgs.get_anti_out_neighbours(qo[idx]);
+                const auto &not_edges_in = vgs.get_anti_In_neighbours(qo[idx]);
                 // all vertices in the range [levels, key) have been matched
                 // want all such vertices that are adjacent to qo[key]
-                for (const uint32_t m : not_edges) {
+                for (const uint32_t m : not_edges_out) {
                     if constexpr (stoppable == STOPPABLE) pthread_testcancel();
                     for (uint32_t qi = 0; qi < idx; ++qi) {
                         if (m == qo[qi]) {
                             assert(mvgs.mapped(m));
-                            nUcon.push_back(m);
+                            nUconOut.push_back(m);
                         }
                     }
                 }
 
-                for (const uint32_t n : nUcon) {
+                for (const uint32_t m : not_edges_in) {
+                    if constexpr (stoppable == STOPPABLE) pthread_testcancel();
+                    for (uint32_t qi = 0; qi < idx; ++qi) {
+                        if (m == qo[qi]) {
+                            assert(mvgs.mapped(m));
+                            nUconIn.push_back(m);
+                        }
+                    }
+                }
+
+                for (const uint32_t n : nUconOut) {
                     if constexpr (stoppable == STOPPABLE) pthread_testcancel();
 
                     std::vector<uint32_t> t;
                     t.swap(xsection);
 
                     const uint32_t v = mvgs.at(n);
-                    const adjlist &adj = gpb->get_adj_out(v);
+                    const adjlist &adj_out = gpb->get_adj_out(v);
 
                     std::set_difference(std::execution::unseq,
                                         t.cbegin(), t.cend(),
-                                        adj.ptr, adj.ptr + adj.length,
+                                        adj_out.ptr, adj_out.ptr + adj_out.length,
+                                        std::back_inserter(xsection));
+                }
+
+                for (const uint32_t n : nUconIn) {
+                    if constexpr (stoppable == STOPPABLE) pthread_testcancel();
+
+                    std::vector<uint32_t> t;
+                    t.swap(xsection);
+
+                    const uint32_t v = mvgs.at(n);
+                    const adjlist &adj_in = gpb->get_adj_in(v);
+
+                    std::set_difference(std::execution::unseq,
+                                        t.cbegin(), t.cend(),
+                                        adj_in.ptr, adj_in.ptr + adj_in.length,
                                         std::back_inserter(xsection));
                 }
             }
