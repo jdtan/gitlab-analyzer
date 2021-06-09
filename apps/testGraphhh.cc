@@ -5,9 +5,11 @@
 #include <unistd.h>
 #include <vector>
 #include <string>
+#include <Options.hh>
 #include "DataConverter.cc"
 #include "DataGraph.hh"
 #include "Graph.hh"
+#include "PatternMatching.hh"
 
 
 namespace std
@@ -180,5 +182,30 @@ TEST_CASE("DataConverterTest") {
         Peregrine::DataGraph graph = Peregrine::DataGraph("data/output");
         CHECK(graph.get_vertex_count() == 7115);
         CHECK(graph.get_edge_count() == 103689);
+    }
+}
+
+TEST_CASE("PatternMatching") {
+    using namespace Peregrine;
+
+    SmallGraph dataGraphAsSmallGraph = SmallGraph("data/SmallTestDataGraph.txt");
+    DataGraph dataGraph(dataGraphAsSmallGraph);
+    SmallGraph pattern = SmallGraph("data/SmallTestPattern.txt");
+
+    SUBCASE("map_into") {
+        std::vector<std::vector<uint32_t>> cands(pattern.num_vertices() + 2, std::vector<uint32_t>{});
+
+        uint64_t count = 0;
+        uint32_t vgsCount = dataGraph.get_vgs_count();
+        uint32_t num_vertices = dataGraph.get_vertex_count();
+
+        const auto process = [&count](const CompleteMatch &) -> void { count += 1; };
+
+        for (uint32_t vgsi = 0; vgsi < vgsCount; ++vgsi) {
+            Matcher<false, UNSTOPPABLE, decltype(process)> matcher(dataGraph.rbi, &dataGraph, vgsi, cands, process);
+            for (uint32_t v = 1; v <= num_vertices; ++v) {
+                matcher.map_into<Graph::UNLABELLED, false>(v);
+            }
+        }
     }
 }

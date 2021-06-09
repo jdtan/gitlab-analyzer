@@ -24,6 +24,8 @@ namespace Peregrine
         SmallGraph p(pp);
         graph_in_memory_out = std::make_unique<uint32_t[]>(2 * p.num_true_edges_in());
         data_graph_out = std::make_unique<adjlist[]>(p.num_vertices() + 1);
+        graph_in_memory_in = std::make_unique<uint32_t[]>(2 * p.num_true_edges_in());
+        data_graph_in = std::make_unique<adjlist[]>(p.num_vertices() + 1);
 
         uint32_t cursor = 0;
         for (uint32_t v = 1; v <= p.num_vertices(); ++v) {
@@ -35,6 +37,7 @@ namespace Peregrine
             cursor += p.true_adj_list_out.at(v).size();
         }
 
+        cursor = 0;
         for (uint32_t v = 1; v <= p.num_vertices(); ++v) {
             std::sort(p.true_adj_list_in.at(v).begin(), p.true_adj_list_in.at(v).end());
 

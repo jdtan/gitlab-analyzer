@@ -14,6 +14,9 @@ add_executable(
         ./core/PatternGenerator.hh
         ./core/PatternGenerator.cc
         ./core/PatternMatching.hh
+        ./core/utils.hh
+        ./core/utils.cc
+        ./core/bliss-0.73/bliss.cc
         ./apps/testGraphhh.cc
         ./apps/count.cc
         ./apps/existence-query.cc

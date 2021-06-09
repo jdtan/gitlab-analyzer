@@ -361,13 +361,14 @@ namespace Peregrine {
         bool check_anti_vertices(const partial_match<L> &m) {
             const auto &p = rbi.query_graph;
             for (auto av : rbi.anti_vertices) {
-                const std::vector<uint32_t> &anti_parents = rbi.query_graph.get_anti_neighbours(av);
+                const std::vector<uint32_t> &anti_parents_out = rbi.query_graph.get_anti_out_neighbours(av);
+                const std::vector<uint32_t> &anti_parents_in = rbi.query_graph.get_anti_in_neighbours(av);
                 std::vector<uint32_t> &candidates = *(cands.end() - 2);
                 std::vector<uint32_t> &t = cands.back();
-                const adjlist &fadj = gpb->get_adj_out(m.at(anti_parents.front()));
+                const adjlist &fadj = gpb->get_adj_out(m.at(anti_parents_out.front()));
                 candidates.assign(fadj.ptr, fadj.ptr + fadj.length);
-                for (uint32_t i = 1; i < anti_parents.size(); ++i) {
-                    const uint32_t du = m.at(anti_parents[i]);
+                for (uint32_t i = 1; i < anti_parents_out.size(); ++i) {
+                    const uint32_t du = m.at(anti_parents_out[i]);
                     const adjlist &duadj = gpb->get_adj_out(du);
                     t.clear();
                     t.swap(candidates);
@@ -377,10 +378,32 @@ namespace Peregrine {
                                           std::back_inserter(candidates));
                 }
 
-                std::vector<uint32_t> reg_v = p.get_neighbours(anti_parents.front());
-                for (uint32_t i = 1; i < anti_parents.size(); ++i) {
-                    const uint32_t pu = anti_parents[i];
-                    const auto &puadj = p.get_neighbours(pu);
+                for (uint32_t i = 0; i < anti_parents_in.size(); ++i) {
+                    const uint32_t du = m.at(anti_parents_in[i]);
+                    const adjlist &duadj = gpb->get_adj_in(du);
+                    t.clear();
+                    t.swap(candidates);
+                    std::set_intersection(std::execution::unseq,
+                                          t.cbegin(), t.cend(),
+                                          duadj.ptr, duadj.ptr + duadj.length,
+                                          std::back_inserter(candidates));
+                }
+
+                std::vector<uint32_t> reg_v = p.get_out_neighbours(anti_parents_out.front());
+                for (uint32_t i = 1; i < anti_parents_out.size(); ++i) {
+                    const uint32_t pu = anti_parents_out[i];
+                    const auto &puadj = p.get_out_neighbours(pu);
+                    t.clear();
+                    t.swap(reg_v);
+                    std::set_intersection(std::execution::unseq,
+                                          t.cbegin(), t.cend(),
+                                          puadj.cbegin(), puadj.cend(),
+                                          std::back_inserter(reg_v));
+                }
+
+                for (uint32_t i = 0; i < anti_parents_in.size(); ++i) {
+                    const uint32_t pu = anti_parents_in[i];
+                    const auto &puadj = p.get_in_neighbours(pu);
                     t.clear();
                     t.swap(reg_v);
                     std::set_intersection(std::execution::unseq,
@@ -392,7 +415,7 @@ namespace Peregrine {
                 if (!candidates.empty()) {
                     if constexpr (L == Graph::UNLABELLED) {
                         // if pattern is unlabelled, then we don't care about anti-vertex labels
-                        if (anti_parents.size() == p.num_vertices()) return false;
+                        if (anti_parents_out.size() + anti_parents_in.size() == p.num_vertices()) return false;
 
                         // can never meet constraint
                         if (candidates.size() > reg_v.size()) return false;
@@ -405,7 +428,7 @@ namespace Peregrine {
                         // if pattern is labelled or we're discovering labels, then an
                         // unlabelled anti-vertex is the same as in the unlabelled pattern case
                         if (p.label(av) == static_cast<uint32_t>(-1)) {
-                            if (anti_parents.size() == p.num_vertices()) return false;
+                            if (anti_parents_out.size() + anti_parents_in.size() == p.num_vertices()) return false;
 
                             // can never meet constraint
                             if (candidates.size() > reg_v.size()) return false;
@@ -430,7 +453,11 @@ namespace Peregrine {
 
                             // don't count anti-parents with the undesirlable, as they are
                             // not part of the candidates
-                            for (uint32_t pv : anti_parents) {
+                            for (uint32_t pv : anti_parents_out) {
+                                if (p.label(pv) == undesirlable) c -= 1;
+                            }
+
+                            for (uint32_t pv : anti_parents_in) {
                                 if (p.label(pv) == undesirlable) c -= 1;
                             }
 
@@ -473,12 +500,15 @@ namespace Peregrine {
                 for (const uint32_t g : sibgroups) {
                     if constexpr (stoppable == STOPPABLE) pthread_testcancel();
 
-                    const auto &true_parents = p.get_neighbours(g);
-                    const auto &anti_parents = p.get_anti_neighbours(g);
+                    const auto &true_parents_out = p.get_out_neighbours(g);
+                    const auto &anti_parents_out = p.get_anti_out_neighbours(g);
+                    const auto &true_parents_in = p.get_in_neighbours(g);
+                    const auto &anti_parents_in = p.get_anti_in_neighbours(g);
+
                     auto &candidates = cands[vgs_sz + idx];
-                    const adjlist &a = gpb->get_adj_out(m.at(true_parents.front()));
-                    uint32_t *start = a.ptr;
-                    uint32_t *end = a.ptr + a.length;
+                    const adjlist &a_out = gpb->get_adj_out(m.at(true_parents_out.front()));
+                    uint32_t *start = a_out.ptr;
+                    uint32_t *end = a_out.ptr + a_out.length;
 
                     // views for sibling groups
                     const auto &lower = rbi.lower_bounds[g];
@@ -508,10 +538,22 @@ namespace Peregrine {
 
                     candidates.assign(start, end);
 
-                    for (uint32_t i = 1; i < true_parents.size(); ++i) {
+                    for (uint32_t i = 1; i < true_parents_out.size(); ++i) {
                         if constexpr (stoppable == STOPPABLE) pthread_testcancel();
-                        const uint32_t du = m.at(true_parents[i]);
+                        const uint32_t du = m.at(true_parents_out[i]);
                         const adjlist &duadj = gpb->get_adj_out(du);
+                        t.clear();
+                        t.swap(candidates);
+                        std::set_intersection(std::execution::unseq,
+                                              t.cbegin(), t.cend(),
+                                              duadj.ptr, duadj.ptr + duadj.length,
+                                              std::back_inserter(candidates));
+                    }
+
+                    for (uint32_t i = 0; i < true_parents_in.size(); ++i) {
+                        if constexpr (stoppable == STOPPABLE) pthread_testcancel();
+                        const uint32_t du = m.at(true_parents_in[i]);
+                        const adjlist &duadj = gpb->get_adj_in(du);
                         t.clear();
                         t.swap(candidates);
                         std::set_intersection(std::execution::unseq,
@@ -522,11 +564,26 @@ namespace Peregrine {
 
                     // can't guard this with HAE since vertex induced doesn't count as HAE
                     {
-                        for (uint32_t i = 0; i < anti_parents.size(); ++i) {
+                        for (uint32_t i = 0; i < anti_parents_out.size(); ++i) {
                             if constexpr (stoppable == STOPPABLE) pthread_testcancel();
-                            if (p.is_anti_vertex(anti_parents[i])) continue;
-                            const uint32_t du = m.at(anti_parents[i]);
+                            if (p.is_anti_vertex(anti_parents_out[i])) continue;
+                            const uint32_t du = m.at(anti_parents_out[i]);
                             const adjlist &duadj = gpb->get_adj_out(du);
+                            t.clear();
+                            t.swap(candidates);
+                            std::set_difference(std::execution::unseq,
+                                                t.cbegin(), t.cend(),
+                                                duadj.ptr, duadj.ptr + duadj.length,
+                                                std::back_inserter(candidates));
+                        }
+                    }
+
+                    {
+                        for (uint32_t i = 0; i < anti_parents_in.size(); ++i) {
+                            if constexpr (stoppable == STOPPABLE) pthread_testcancel();
+                            if (p.is_anti_vertex(anti_parents_in[i])) continue;
+                            const uint32_t du = m.at(anti_parents_in[i]);
+                            const adjlist &duadj = gpb->get_adj_in(du);
                             t.clear();
                             t.swap(candidates);
                             std::set_difference(std::execution::unseq,
@@ -1031,7 +1088,6 @@ namespace Peregrine {
 
             const adjlist &data_adj_out = gpb->get_adj_out(mvgs.at(UconOut[0]));
 
-            //TODO: need to check
             uint32_t *start = data_adj_out.ptr;
             uint32_t *end = data_adj_out.ptr + data_adj_out.length;
 
@@ -1106,7 +1162,7 @@ namespace Peregrine {
                 std::vector<uint32_t> nUconOut;
                 std::vector<uint32_t> nUconIn;
                 const auto &not_edges_out = vgs.get_anti_out_neighbours(qo[idx]);
-                const auto &not_edges_in = vgs.get_anti_In_neighbours(qo[idx]);
+                const auto &not_edges_in = vgs.get_anti_in_neighbours(qo[idx]);
                 // all vertices in the range [levels, key) have been matched
                 // want all such vertices that are adjacent to qo[key]
                 for (const uint32_t m : not_edges_out) {
@@ -1353,13 +1409,14 @@ namespace Peregrine {
         bool check_anti_vertices(const partial_match<L> &m) {
             const auto &p = rbi.query_graph;
             for (auto av : rbi.anti_vertices) {
-                const std::vector<uint32_t> &anti_parents = rbi.query_graph.get_anti_neighbours(av);
+                const std::vector<uint32_t> &anti_parents_out = rbi.query_graph.get_anti_out_neighbours(av);
+                const std::vector<uint32_t> &anti_parents_in = rbi.query_graph.get_anti_in_neighbours(av);
                 std::vector<uint32_t> &candidates = *(cands.end() - 2);
                 std::vector<uint32_t> &t = cands.back();
-                const adjlist &fadj = gpb->get_adj_out(m.at(anti_parents.front()));
+                const adjlist &fadj = gpb->get_adj_out(m.at(anti_parents_out.front()));
                 candidates.assign(fadj.ptr, fadj.ptr + fadj.length);
-                for (uint32_t i = 1; i < anti_parents.size(); ++i) {
-                    const uint32_t du = m.at(anti_parents[i]);
+                for (uint32_t i = 1; i < anti_parents_out.size(); ++i) {
+                    const uint32_t du = m.at(anti_parents_out[i]);
                     const adjlist &duadj = gpb->get_adj_out(du);
                     t.clear();
                     t.swap(candidates);
@@ -1369,10 +1426,32 @@ namespace Peregrine {
                                           std::back_inserter(candidates));
                 }
 
-                std::vector<uint32_t> reg_v = p.get_neighbours(anti_parents.front());
-                for (uint32_t i = 1; i < anti_parents.size(); ++i) {
-                    const uint32_t pu = anti_parents[i];
-                    const auto &puadj = p.get_neighbours(pu);
+                for (uint32_t i = 0; i < anti_parents_in.size(); ++i) {
+                    const uint32_t du = m.at(anti_parents_in[i]);
+                    const adjlist &duadj = gpb->get_adj_in(du);
+                    t.clear();
+                    t.swap(candidates);
+                    std::set_intersection(std::execution::unseq,
+                                          t.cbegin(), t.cend(),
+                                          duadj.ptr, duadj.ptr + duadj.length,
+                                          std::back_inserter(candidates));
+                }
+
+                std::vector<uint32_t> reg_v = p.get_out_neighbours(anti_parents_out.front());
+                for (uint32_t i = 1; i < anti_parents_out.size(); ++i) {
+                    const uint32_t pu = anti_parents_out[i];
+                    const auto &puadj = p.get_out_neighbours(pu);
+                    t.clear();
+                    t.swap(reg_v);
+                    std::set_intersection(std::execution::unseq,
+                                          t.cbegin(), t.cend(),
+                                          puadj.cbegin(), puadj.cend(),
+                                          std::back_inserter(reg_v));
+                }
+
+                for (uint32_t i = 0; i < anti_parents_in.size(); ++i) {
+                    const uint32_t pu = anti_parents_in[i];
+                    const auto &puadj = p.get_in_neighbours(pu);
                     t.clear();
                     t.swap(reg_v);
                     std::set_intersection(std::execution::unseq,
@@ -1384,7 +1463,7 @@ namespace Peregrine {
                 if (!candidates.empty()) {
                     if constexpr (L == Graph::UNLABELLED) {
                         // if pattern is unlabelled, then we don't care about anti-vertex labels
-                        if (anti_parents.size() == p.num_vertices()) return false;
+                        if (anti_parents_out.size() + anti_parents_in.size() == p.num_vertices()) return false;
 
                         // can never meet constraint
                         if (candidates.size() > reg_v.size()) return false;
@@ -1397,7 +1476,7 @@ namespace Peregrine {
                         // if pattern is labelled or we're discovering labels, then an
                         // unlabelled anti-vertex is the same as in the unlabelled pattern case
                         if (p.label(av) == static_cast<uint32_t>(-1)) {
-                            if (anti_parents.size() == p.num_vertices()) return false;
+                            if (anti_parents_out.size() + anti_parents_in.size() == p.num_vertices()) return false;
 
                             // can never meet constraint
                             if (candidates.size() > reg_v.size()) return false;
@@ -1422,7 +1501,11 @@ namespace Peregrine {
 
                             // don't count anti-parents with the undesirlable, as they are
                             // not part of the candidates
-                            for (uint32_t pv : anti_parents) {
+                            for (uint32_t pv : anti_parents_out) {
+                                if (p.label(pv) == undesirlable) c -= 1;
+                            }
+
+                            for (uint32_t pv : anti_parents_in) {
                                 if (p.label(pv) == undesirlable) c -= 1;
                             }
 
@@ -1463,10 +1546,12 @@ namespace Peregrine {
                 uint8_t idx = 0;
                 // sibgrouops must have some true parents
                 for (const uint32_t g : sibgroups) {
-                    const auto &true_parents = p.get_neighbours(g);
-                    const auto &anti_parents = p.get_anti_neighbours(g);
+                    const auto &true_parents_out = p.get_out_neighbours(g);
+                    const auto &true_parents_in = p.get_in_neighbours(g);
+                    const auto &anti_parents_out = p.get_anti_out_neighbours(g);
+                    const auto &anti_parents_in = p.get_anti_in_neighbours(g);
                     auto &candidates = cands[vgs_sz + idx];
-                    const adjlist &a = gpb->get_adj_out(m.at(true_parents.front()));
+                    const adjlist &a = gpb->get_adj_out(m.at(true_parents_out.front()));
                     uint32_t *start = a.ptr;
                     uint32_t *end = a.ptr + a.length;
 
@@ -1491,8 +1576,8 @@ namespace Peregrine {
 
                     candidates.assign(start, end);
 
-                    for (uint32_t i = 1; i < true_parents.size(); ++i) {
-                        const uint32_t du = m.at(true_parents[i]);
+                    for (uint32_t i = 1; i < true_parents_out.size(); ++i) {
+                        const uint32_t du = m.at(true_parents_out[i]);
                         const adjlist &duadj = gpb->get_adj_out(du);
                         t.clear();
                         t.swap(candidates);
@@ -1502,10 +1587,33 @@ namespace Peregrine {
                                               std::back_inserter(candidates));
                     }
 
-                    for (uint32_t i = 0; i < anti_parents.size(); ++i) {
-                        if (p.is_anti_vertex(anti_parents[i])) continue;
-                        const uint32_t du = m.at(anti_parents[i]);
+                    for (uint32_t i = 0; i < true_parents_in.size(); ++i) {
+                        const uint32_t du = m.at(true_parents_in[i]);
+                        const adjlist &duadj = gpb->get_adj_in(du);
+                        t.clear();
+                        t.swap(candidates);
+                        std::set_intersection(std::execution::unseq,
+                                              t.cbegin(), t.cend(),
+                                              duadj.ptr, duadj.ptr + duadj.length,
+                                              std::back_inserter(candidates));
+                    }
+
+                    for (uint32_t i = 0; i < anti_parents_out.size(); ++i) {
+                        if (p.is_anti_vertex(anti_parents_out[i])) continue;
+                        const uint32_t du = m.at(anti_parents_out[i]);
                         const adjlist &duadj = gpb->get_adj_out(du);
+                        t.clear();
+                        t.swap(candidates);
+                        std::set_difference(std::execution::unseq,
+                                            t.cbegin(), t.cend(),
+                                            duadj.ptr, duadj.ptr + duadj.length,
+                                            std::back_inserter(candidates));
+                    }
+
+                    for (uint32_t i = 0; i < anti_parents_in.size(); ++i) {
+                        if (p.is_anti_vertex(anti_parents_in[i])) continue;
+                        const uint32_t du = m.at(anti_parents_in[i]);
+                        const adjlist &duadj = gpb->get_adj_in(du);
                         t.clear();
                         t.swap(candidates);
                         std::set_difference(std::execution::unseq,
@@ -1779,47 +1887,62 @@ namespace Peregrine {
         template<Graph::Labelling L>
         void get_next_cand(std::vector<uint32_t> &xsection, unsigned idx, const partial_match<L> &mvgs) {
             // query vertices already matched, and connected from qo[key]
-            std::vector<uint32_t> Ucon;
-            const auto &true_edges = vgs.get_neighbours(qo[idx]);
+            std::vector<uint32_t> UconOut;
+            std::vector<uint32_t> UconIn;
+            const auto &true_edges_out = vgs.get_out_neighbours(qo[idx]);
+            const auto &true_edges_in = vgs.get_in_neighbours(qo[idx]);
             // all vertices in the range [levels, key) have been matched
             // want all such vertices that are adjacent to qo[key]
-            for (const uint32_t m : true_edges) {
+            for (const uint32_t m : true_edges_out) {
                 for (uint32_t qi = 0; qi < idx; ++qi) {
                     if (m == qo[qi]) {
-                        assert(mvgs.mapped(m));
-                        Ucon.push_back(m);
+                        assert(mvgs.mapped(m)); // * check if this vertex has been mapped or not
+                        UconOut.push_back(m);
                     }
                 }
             }
 
-            const adjlist &adj = gpb->get_adj_out(mvgs.at(Ucon[0]));
+            for (const uint32_t m : true_edges_in) {
+                for (uint32_t qi = 0; qi < idx; ++qi) {
+                    if (m == qo[qi]) {
+                        assert(mvgs.mapped(m)); // * check if this vertex has been mapped or not
+                        UconIn.push_back(m);
+                    }
+                }
+            }
 
-            uint32_t *start = adj.ptr;
-            uint32_t *end = adj.ptr + adj.length;
+            const adjlist &data_adj_out = gpb->get_adj_out(mvgs.at(UconOut[0]));
+
+            uint32_t *start = data_adj_out.ptr;
+            uint32_t *end = data_adj_out.ptr + data_adj_out.length;
 
             uint32_t lower_bound = 0;
             uint32_t upper_bound = static_cast<uint32_t>(-1); // largest possible
             for (uint32_t i = 0; i < idx; ++i) {
-                if (qo[i] < qo[idx]) lower_bound = std::max(lower_bound, qo[i]);
-                else if (qo[i] > qo[idx]) upper_bound = std::min(upper_bound, qo[i]);
+                if (qo[i] < qo[idx])
+                    lower_bound = std::max(lower_bound, qo[i]);
+                else if (qo[i] > qo[idx])
+                    upper_bound = std::min(upper_bound, qo[i]);
             }
 
+            // enforce total ordering on core vertices by only considering correct
+            // range of candidate data vertices
+
             start = lower_bound > 0
-                    ? std::upper_bound(adj.ptr, adj.ptr + adj.length, mvgs.at(lower_bound))
+                    ? std::upper_bound(data_adj_out.ptr, data_adj_out.ptr + data_adj_out.length, mvgs.at(lower_bound))
                     : start;
 
             end = upper_bound < (uint32_t) -1
-                  ? std::lower_bound(start, adj.ptr + adj.length, mvgs.at(upper_bound))
+                  ? std::lower_bound(start, data_adj_out.ptr + data_adj_out.length, mvgs.at(upper_bound))
                   : end;
 
-            // * xsection = the adj list from lower bound to upper bound
             xsection.assign(start, end);
 
-            for (unsigned i = 1; i < Ucon.size(); ++i) {
+            for (unsigned i = 1; i < UconOut.size(); ++i) {
                 std::vector<uint32_t> t;
                 t.swap(xsection);
 
-                const uint32_t n = Ucon[i];
+                const uint32_t n = UconOut[i];
                 const uint32_t v = mvgs.at(n);
                 const adjlist &adj = gpb->get_adj_out(v);
 
@@ -1829,32 +1952,82 @@ namespace Peregrine {
                                       std::back_inserter(xsection));
             }
 
-
-            // TODO: ! not union connected vertices?
-            std::vector<uint32_t> nUcon;
-            const auto &not_edges = vgs.get_anti_neighbours(qo[idx]);
-            // all vertices in the range [levels, key) have been matched
-            // want all such vertices that are adjacent to qo[key]
-            for (const uint32_t m : not_edges) {
-                for (uint32_t qi = 0; qi < idx; ++qi) {
-                    if (m == qo[qi]) {
-                        assert(mvgs.mapped(m));
-                        nUcon.push_back(m);
-                    }
-                }
-            }
-
-            for (const uint32_t n : nUcon) {
+            for (unsigned i = 0; i < UconIn.size(); ++i) {
                 std::vector<uint32_t> t;
                 t.swap(xsection);
 
+                const uint32_t n = UconIn[i];
                 const uint32_t v = mvgs.at(n);
-                const adjlist &adj = gpb->get_adj_out(v);
+                const adjlist &adj = gpb->get_adj_in(v);
 
-                std::set_difference(std::execution::unseq,
-                                    t.cbegin(), t.cend(),
-                                    adj.ptr, adj.ptr + adj.length,
-                                    std::back_inserter(xsection));
+                std::set_intersection(std::execution::unseq,
+                                      t.cbegin(), t.cend(),
+                                      adj.ptr, adj.ptr + adj.length,
+                                      std::back_inserter(xsection));
+            }
+
+            // remove bad labels
+            if constexpr (L == Graph::LABELLED) {
+                uint32_t label = vgs.label(qo[idx]);
+                xsection.erase(std::remove_if(std::execution::unseq,
+                                              xsection.begin(),
+                                              xsection.end(),
+                                              [this, &label](uint32_t dv) { return gpb->label(dv) != label; }),
+                               xsection.end());
+            }
+
+
+            // can't guard this with HAE since vertex induced doesn't count as HAE
+            {
+                std::vector<uint32_t> nUconOut;
+                std::vector<uint32_t> nUconIn;
+                const auto &not_edges_out = vgs.get_anti_out_neighbours(qo[idx]);
+                const auto &not_edges_in = vgs.get_anti_in_neighbours(qo[idx]);
+                // all vertices in the range [levels, key) have been matched
+                // want all such vertices that are adjacent to qo[key]
+                for (const uint32_t m : not_edges_out) {
+                    for (uint32_t qi = 0; qi < idx; ++qi) {
+                        if (m == qo[qi]) {
+                            assert(mvgs.mapped(m));
+                            nUconOut.push_back(m);
+                        }
+                    }
+                }
+
+                for (const uint32_t m : not_edges_in) {
+                    for (uint32_t qi = 0; qi < idx; ++qi) {
+                        if (m == qo[qi]) {
+                            assert(mvgs.mapped(m));
+                            nUconIn.push_back(m);
+                        }
+                    }
+                }
+
+                for (const uint32_t n : nUconOut) {
+                    std::vector<uint32_t> t;
+                    t.swap(xsection);
+
+                    const uint32_t v = mvgs.at(n);
+                    const adjlist &adj_out = gpb->get_adj_out(v);
+
+                    std::set_difference(std::execution::unseq,
+                                        t.cbegin(), t.cend(),
+                                        adj_out.ptr, adj_out.ptr + adj_out.length,
+                                        std::back_inserter(xsection));
+                }
+
+                for (const uint32_t n : nUconIn) {
+                    std::vector<uint32_t> t;
+                    t.swap(xsection);
+
+                    const uint32_t v = mvgs.at(n);
+                    const adjlist &adj_in = gpb->get_adj_in(v);
+
+                    std::set_difference(std::execution::unseq,
+                                        t.cbegin(), t.cend(),
+                                        adj_in.ptr, adj_in.ptr + adj_in.length,
+                                        std::back_inserter(xsection));
+                }
             }
         }
 
