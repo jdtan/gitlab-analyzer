@@ -91,7 +91,7 @@ namespace Peregrine
             return anti_adj_list_out.at(v);
         }
 
-        uint32_t num_true_edges_in() const
+        uint32_t num_true_edges() const
         {
             uint32_t count = 0;
             for (const auto &[u, edges] : true_adj_list_in) {
@@ -101,7 +101,7 @@ namespace Peregrine
             return count;
         }
 
-        uint32_t num_anti_edges_in() const
+        uint32_t num_anti_edges() const
         {
             uint32_t count = 0;
             for (const auto &[u, edges] : anti_adj_list_in) {
@@ -316,7 +316,7 @@ namespace Peregrine
                 std::cout << v << ", ";
             }
             std::cout << std::endl;
-            std::cout << "true_adj_in_size: " << num_true_edges_in() << std::endl;
+            std::cout << "true_adj_in_size: " << num_true_edges() << std::endl;
             for (auto v : true_adj_list_in) {
                 std::cout << v.first << ": ";
                 for (auto neighbour : v.second) {
@@ -332,7 +332,7 @@ namespace Peregrine
                 }
                 std::cout << std::endl;
             }
-            std::cout << "anti_adj_in_size: " << num_anti_edges_in() << std::endl;
+            std::cout << "anti_adj_in_size: " << num_anti_edges() << std::endl;
             for (auto v : anti_adj_list_in) {
                 std::cout << v.first << ": ";
                 for (auto neighbour : v.second) {
@@ -701,7 +701,7 @@ namespace Peregrine
         {
             if (anti_vertices.empty())
             {
-                if (query_graph.num_anti_edges_in() == 0)
+                if (query_graph.num_anti_edges() == 0)
                     return false;
             }
             else
@@ -713,12 +713,12 @@ namespace Peregrine
                 }
 
                 // all anti-edges come from anti-vertices
-                if (numAntiEdges == query_graph.num_anti_edges_in())
+                if (numAntiEdges == query_graph.num_anti_edges())
                     return false;
             }
 
             // false iff vertex-induced
-            uint32_t m = query_graph.num_anti_edges_in() + query_graph.num_true_edges_in();
+            uint32_t m = query_graph.num_anti_edges() + query_graph.num_true_edges();
             uint32_t n = query_graph.num_vertices();
 
             return m != (n*(n-1));
@@ -805,7 +805,7 @@ namespace Peregrine
             assert(query_graph.num_vertices() != 0);
             uint32_t n = query_graph.num_vertices();
             return n > 2 && anti_vertices.empty()
-                   && query_graph.num_true_edges_in() == n*(n-1);
+                   && query_graph.num_true_edges() == n * (n - 1);
         }
 
         // TODO: Resume from here
@@ -815,9 +815,9 @@ namespace Peregrine
             uint32_t n = query_graph.num_vertices();
             if (is_mcvc)
                 return n > 2 && anti_vertices.empty()
-                       && query_graph.num_true_edges_in() == n-1;
+                       && query_graph.num_true_edges() == n - 1;
             return n > 2 && anti_vertices.empty()
-            && query_graph.num_true_edges_in() == n*(n-1);
+            && query_graph.num_true_edges() == n * (n - 1);
         }
 
         uint32_t match_po(const std::vector<uint32_t> &v_list, const std::vector<std::pair<uint32_t, uint32_t>> &po)
@@ -1425,7 +1425,7 @@ namespace Peregrine
                             }
                             else if (current_po_match_count == po_match_count)
                             {
-                                if (vertex_cover.num_true_edges_in() >= rbi_v.num_true_edges_in())
+                                if (vertex_cover.num_true_edges() >= rbi_v.num_true_edges())
                                 {
                                     rbi_v = vertex_cover;
                                     v_count = vertex_cover.num_vertices();

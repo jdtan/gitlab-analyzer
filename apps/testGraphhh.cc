@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <Options.hh>
+#include <Peregrine.hh>
 #include "DataConverter.cc"
 #include "DataGraph.hh"
 #include "Graph.hh"
@@ -71,7 +72,7 @@ void testSmallGraphCase1(const Peregrine::SmallGraph& tempGraph)  {
         CHECK(tempGraph.num_vertices() == 4);
         CHECK(tempGraph.v_list() == vector<uint32_t> {1,2,3,4});
         CHECK(isTwoListsContainSameElement(tempGraph.get_out_neighbours(1), vector<uint32_t>{2, 3, 4}) == true);
-        CHECK(tempGraph.num_true_edges_in() == 5);
+        CHECK(tempGraph.num_true_edges() == 5);
     }
 }
 
@@ -80,7 +81,7 @@ void testSmallGraphCase2(const Peregrine::SmallGraph& tempGraph)  {
         CHECK(tempGraph.num_vertices() == 4);
         CHECK(tempGraph.v_list() == vector<uint32_t> {1,2,3,4});
         CHECK(isTwoListsContainSameElement(tempGraph.get_out_neighbours(1), vector<uint32_t>{2, 3, 4}) == true);
-        CHECK(tempGraph.num_true_edges_in() == 6);
+        CHECK(tempGraph.num_true_edges() == 6);
     }
 }
 
@@ -89,7 +90,7 @@ void testSmallGraphCase3(const Peregrine::SmallGraph& tempGraph)  {
         CHECK(tempGraph.num_vertices() == 4);
         CHECK(tempGraph.v_list() == vector<uint32_t> {1,2,3,4});
         CHECK(isTwoListsContainSameElement(tempGraph.get_out_neighbours(1), vector<uint32_t>{4}) == true);
-        CHECK(tempGraph.num_true_edges_in() == 6);
+        CHECK(tempGraph.num_true_edges() == 6);
     }
 }
 
@@ -98,7 +99,7 @@ void testSmallGraphCase4(const Peregrine::SmallGraph& tempGraph)  {
         CHECK(tempGraph.num_vertices() == 6);
         CHECK(tempGraph.v_list() == vector<uint32_t> {1,2,3,4,5,6});
         CHECK(tempGraph.get_out_neighbours(1) == vector<uint32_t> {2,3,6});
-        CHECK(tempGraph.num_true_edges_in() == 8);
+        CHECK(tempGraph.num_true_edges() == 8);
     }
 }
 
@@ -154,7 +155,7 @@ TEST_CASE("GraphTest") {
         }
 
         SUBCASE("Check anti edges and vertices") {
-            CHECK(tempGraph.num_anti_edges_in() == 0);
+            CHECK(tempGraph.num_anti_edges() == 0);
             CHECK(tempGraph.num_anti_vertices() == 0);
         }
     }
@@ -185,6 +186,24 @@ TEST_CASE("DataConverterTest") {
     }
 }
 
+void test_peregrine(const string data_graph_name, const string pattern_name) {
+    int numThreads = 1;
+    vector<Peregrine::SmallGraph> pattern = { Peregrine::SmallGraph(pattern_name) };
+
+    const auto process = [](auto &&aggregatorHandle, auto &&completeMatch) {
+        aggregatorHandle.map(completeMatch.pattern, 1);
+    };
+
+    vector<pair<Peregrine::SmallGraph, uint32_t>> results =
+            Peregrine::match<Peregrine::Pattern, uint32_t, Peregrine::ON_THE_FLY, Peregrine::STOPPABLE>(
+                    data_graph_name, pattern, numThreads, process);
+
+    int patternCount = 0;
+    for (auto &[pattern, count] : results) {
+        cout << patternCount++ << ": " << count << endl;
+    }
+}
+
 TEST_CASE("PatternMatching") {
     using namespace Peregrine;
 
@@ -207,5 +226,13 @@ TEST_CASE("PatternMatching") {
                 matcher.map_into<Graph::UNLABELLED, false>(v);
             }
         }
+    }
+
+    SUBCASE("full_test") {
+        test_peregrine("data/SmallTestDataGraph.txt", "data/SmallTestPattern.txt");
+    }
+
+    SUBCASE("full_test_2") {
+        test_peregrine("data/Wiki-Vote.txt", "data/SmallTestPattern.txt");
     }
 }

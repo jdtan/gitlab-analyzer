@@ -22,9 +22,9 @@ namespace Peregrine
 {
     void DataGraph::from_smallgraph(const SmallGraph &pp) {
         SmallGraph p(pp);
-        graph_in_memory_out = std::make_unique<uint32_t[]>(2 * p.num_true_edges_in());
+        graph_in_memory_out = std::make_unique<uint32_t[]>(2 * p.num_true_edges());
         data_graph_out = std::make_unique<adjlist[]>(p.num_vertices() + 1);
-        graph_in_memory_in = std::make_unique<uint32_t[]>(2 * p.num_true_edges_in());
+        graph_in_memory_in = std::make_unique<uint32_t[]>(2 * p.num_true_edges());
         data_graph_in = std::make_unique<adjlist[]>(p.num_vertices() + 1);
 
         uint32_t cursor = 0;
@@ -48,7 +48,7 @@ namespace Peregrine
         }
 
         vertex_count = p.num_vertices();
-        edge_count = p.num_true_edges_in();
+        edge_count = p.num_true_edges();
 
         labels = std::make_unique<uint32_t[]>(vertex_count+1);
         if (p.labelling == Graph::LABELLED)
