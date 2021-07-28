@@ -34,7 +34,9 @@ namespace Peregrine::DataConverter
 
     std::vector<std::pair<uint32_t, uint32_t>> get_sorted_degrees(edge_list_directed &edge_list);
 
-    void normalize_vertices(uint32_t *vertexMap, const std::vector<std::pair<uint32_t, uint32_t>> &deg_list);
+    void normalize_vertices(uint32_t *vertexMap, const std::vector<std::pair<uint32_t, uint32_t>> &deg_list, std::unordered_map<uint32_t, uint32_t> &org_to_new_vertex_map);
+
+    void map_org_edge_list_to_normalized(edge_list_directed &edgeList, const std::unordered_map<uint32_t, uint32_t> org_to_new_vertex_map);
 
     void write_graph_to_drive(const std::string &outputDir,
                               edge_list_directed &edge_list,

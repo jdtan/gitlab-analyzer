@@ -40,7 +40,9 @@ namespace Peregrine::DataConverter {
         // pair<vertexID, sum of the inDeg and outDeg for that vertex>
         vector<pair<uint32_t, uint32_t>> deg_list = get_sorted_degrees(edge_list);
         auto* vertexMap = new uint32_t[deg_list.size()];
-        normalize_vertices(vertexMap, deg_list);
+        unordered_map<uint32_t, uint32_t> org_to_new_vertex_map;
+        normalize_vertices(vertexMap, deg_list, ref(org_to_new_vertex_map));
+        map_org_edge_list_to_normalized(ref(edge_list), org_to_new_vertex_map);
 
         write_graph_to_drive(out_dir, edge_list, deg_list);
         write_id_map_to_drive(out_dir, vertexMap, deg_list.size());
@@ -210,11 +212,30 @@ namespace Peregrine::DataConverter {
         return degList;
     }
 
-    void normalize_vertices(uint32_t *vertexMap, const vector<std::pair<uint32_t, uint32_t>> &deg_list) {
+    void normalize_vertices(uint32_t *vertexMap, 
+        const vector<std::pair<uint32_t, uint32_t>> &deg_list, 
+        std::unordered_map<uint32_t, uint32_t> &org_to_new_vertex_map) {
         uint32_t count = 0;
         for (auto const& vertex : deg_list) {
             vertexMap[count] = vertex.first;
+            org_to_new_vertex_map[vertex.first] = count;
             count++;
+        }
+    }
+
+    void map_org_edge_list_to_normalized(
+        edge_list_directed &edge_list, 
+        const std::unordered_map<uint32_t, uint32_t> org_to_new_vertex_map) {
+        for(auto &[_, myList] : edge_list.inEdgeList) {
+            for(uint32_t i = 0; i < myList.size(); i++){
+                myList[i] = org_to_new_vertex_map.at(myList[i]);
+            }
+        }
+
+        for(auto &[_, myList] : edge_list.outEdgeList) {
+            for(uint32_t i = 0; i < myList.size(); i++){
+                myList[i] = org_to_new_vertex_map.at(myList[i]);
+            }
         }
     }
 
@@ -253,7 +274,7 @@ namespace Peregrine::DataConverter {
                         write_thread_local_files,
                         tempOutputDirOutEdge,
                         ref(edge_list.outEdgeList),
-                        deg_list,
+                        ref(deg_list),
                         taskSize,
                         i);
 
@@ -261,7 +282,7 @@ namespace Peregrine::DataConverter {
                         write_thread_local_files,
                         tempOutputDirInEdge,
                         ref(edge_list.inEdgeList),
-                        deg_list,
+                        ref(deg_list),
                         taskSize,
                         i);
             }
@@ -291,8 +312,9 @@ namespace Peregrine::DataConverter {
             uint32_t numEdges = edge_list[element.first].size();
             output.write(reinterpret_cast<const char *>(&numEdges), sizeof(numEdges));
             output.write(reinterpret_cast<const char *>(
-                                 &edge_list[element.first][0]),edge_list[element.first].size() * sizeof(uint32_t));
+                                 &edge_list[element.first][0]), edge_list[element.first].size() * sizeof(uint32_t));
         }
+        output.close();
     }
 
     void concatenateAllTempFilesForOutEdges(string outputDir, uint32_t numVertices, uint64_t numEdges) {
@@ -318,8 +340,12 @@ namespace Peregrine::DataConverter {
             ifstream input_in(thread_local_path_in.c_str(), std::ios::binary);
             output_in << input_in.rdbuf();
             remove(thread_local_path_in.c_str());
+
+            input_in.close();
+            input_out.close();
         }
         output_out.close();
+        output_in.close();
     }
 
     void write_id_map_to_drive(const std::string &outputDir, const uint32_t* vertexMap, const uint32_t &size) {
@@ -357,6 +383,7 @@ namespace Peregrine::DataConverter {
                     }
                 }
                 outputFile.close();
+                inputFile.close();
             }
             auto t16 = utils::get_timestamp();
             utils::Log{} << "Converted labels to binary format in " << (t16-t15)/1e6 << "s" << "\n";

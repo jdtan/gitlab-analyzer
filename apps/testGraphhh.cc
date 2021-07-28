@@ -161,6 +161,11 @@ TEST_CASE("GraphTest") {
     }
 }
 
+TEST_CASE("AnalyzedPatternForWikiVoteTest") {
+    Peregrine::SmallGraph tempGraph = Peregrine::SmallGraph("data/Wiki-Vote.txt");
+    Peregrine::AnalyzedPattern tempAnalyzedPattern = Peregrine::AnalyzedPattern(tempGraph);
+}
+
 TEST_CASE("DataConverterTest") {
     using namespace Peregrine::DataConverter;
 
@@ -183,6 +188,16 @@ TEST_CASE("DataConverterTest") {
         Peregrine::DataGraph graph = Peregrine::DataGraph("data/output");
         CHECK(graph.get_vertex_count() == 7115);
         CHECK(graph.get_edge_count() == 103689);
+        for (uint32_t u = 1; u <= graph.get_vertex_count(); u++) {
+            Peregrine::adjlist adj_in = graph.get_adj_in(u);
+            for (uint32_t i = 0; i < adj_in.length; i++) {
+                CHECK(adj_in.ptr[i] <= 7115);
+            }
+            Peregrine::adjlist adj_out = graph.get_adj_out(u);
+            for (uint32_t i = 0; i < adj_out.length; i++) {
+                CHECK(adj_out.ptr[i] <= 7115);
+            }
+        }
     }
 }
 
@@ -226,13 +241,5 @@ TEST_CASE("PatternMatching") {
                 matcher.map_into<Graph::UNLABELLED, false>(v);
             }
         }
-    }
-
-    SUBCASE("full_test") {
-        test_peregrine("data/SmallTestDataGraph.txt", "data/SmallTestPattern.txt");
-    }
-
-    SUBCASE("full_test_2") {
-        test_peregrine("data/Wiki-Vote.txt", "data/SmallTestPattern.txt");
     }
 }
