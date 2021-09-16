@@ -1085,7 +1085,8 @@ namespace Peregrine {
                     }
                 }
             }
-
+            
+            //TODO: UconOut is empty
             const adjlist &data_adj_out = gpb->get_adj_out(mvgs.at(UconOut[0]));
 
             uint32_t *start = data_adj_out.ptr;
